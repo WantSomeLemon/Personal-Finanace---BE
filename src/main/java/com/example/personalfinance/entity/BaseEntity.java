@@ -16,7 +16,7 @@ public abstract class BaseEntity {
     
     @Column(updatable = false)
     @CreationTimestamp
-    private LocalDateTime createdAt;
+    public LocalDateTime createdAt;
     
     @Column(updatable = true)
     @UpdateTimestamp

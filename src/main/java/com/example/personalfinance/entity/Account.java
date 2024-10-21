@@ -18,7 +18,7 @@ public class Account extends BaseEntity {
     @Column(name = "name")
     private String name;
     
-    @Column(name = "current_Balance")
+    @Column(name = "current_balance")
     private double currentBalance;
     
     @Column(name = "payment_types")
