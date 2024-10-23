@@ -1,6 +1,6 @@
 package com.example.personalfinance.service;
 
-import com.example.personalfinance.bean.responce.AccountResponce;
+import com.example.personalfinance.bean.response.AccountResponse;
 import com.example.personalfinance.entity.Account;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public interface AccountService {
 
     void deleteAccount(String accountId);
 
-    List<AccountResponce> getAccountsByUsername(String username);
+    List<AccountResponse> getAccountsByUsername(String username);
 
     Account getAccountById(Integer id);
 
