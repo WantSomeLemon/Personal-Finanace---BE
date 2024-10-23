@@ -1,15 +1,11 @@
-package com.example.personalfinance.bean.responce;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+package com.example.personalfinance.bean.response;
 
 import java.util.List;
 
+import lombok.Data;
+
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class AccountResponce {
+public class AccountResponse {
     private int accountId;
     private String name;
     private double currentBalance;
@@ -17,7 +13,7 @@ public class AccountResponce {
     private double totalExpense;
     private double totalIncome;
 
-    public AccountResponce(int accountId, String name, double currentBalance, List<String> paymentTypes, double totalExpense, double totalIncome){
+    public AccountResponse(int accountId, String name, double currentBalance, List<String> paymentTypes, double totalExpense, double totalIncome){
         this.accountId = accountId;
         this.name = name;
         this.currentBalance = currentBalance;
