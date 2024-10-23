@@ -1,27 +1,32 @@
 package com.example.personalfinance.service;
 
-import javax.mail.MessagingException;
+import org.springframework.mail.MailException;
 import java.io.UnsupportedEncodingException;
-import com.example.personalfinance.bean.request.ProfileEmailDto;
-import com.example.personalfinance.bean.request.ProfileImgDto;
-import com.example.personalfinance.bean.request.ProfileNameDto;
-import com.example.personalfinance.bean.request.ProfilePasswordDto;
-import com.example.personalfinance.bean.responce.BaseResponeDto;
+import com.example.personalfinance.bean.request.ProfileEmail;
+import com.example.personalfinance.bean.request.ProfileImg;
+import com.example.personalfinance.bean.request.ProfileName;
+import com.example.personalfinance.bean.request.ProfilePassword;
+import com.example.personalfinance.bean.response.BaseResponse;
 import com.example.personalfinance.entity.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public interface UserService {
-    ResponseEntity<BaseResponeDto> regisster(User user);
-    void updateUserProfileImage(ProfileImgDto profileImgDto, String userName);
-    void updateUserProfileName(ProfileNameDto profileNameDto, String userName);
-    void updateUserProfileEmail(ProfileEmailDto profileEmailDto, String userName);
-    void sendVerificationEmail(String email) throws MessagingException, UnsupportedEncodingException;
-                            //MessagingException lib can't be found in ide
-         ResponseEntity<BaseResponeDto> updatePassord(ProfilePasswordDto profilePasswordDto, String userName);
-         ResponseEntity<BaseResponeDto> login(loginDto login);
-                            //loginDto reference to auth part the project
+    ResponseEntity<BaseResponse> regisster(User user);
+
+    void updateUserProfileImage(ProfileImg profileImg, String userName);
+
+    void updateUserProfileName(ProfileName profileName, String userName);
+
+    void updateUserProfileEmail(ProfileEmail profileEmail, String userName);
+
+    void sendVerificationEmail(String email) throws MailException, UnsupportedEncodingException;
+
+    ResponseEntity<BaseResponse> updatePassord(ProfilePassword profilePassword, String userName);
+
+    ResponseEntity<BaseResponse> login(login login);
+
+    // loginDto reference to auth part the project
     void newPassword(String email, String password);
 }

@@ -1,6 +1,6 @@
 package com.example.personalfinance.service.impl;
 
-import com.example.personalfinance.bean.responce.AccountResponce;
+import com.example.personalfinance.bean.response.AccountResponse;
 import com.example.personalfinance.entity.Account;
 import com.example.personalfinance.entity.Transaction;
 import com.example.personalfinance.entity.User;
@@ -87,11 +87,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountResponce> getAccountsByUsername(String username) {
+    public List<AccountResponse> getAccountsByUsername(String username) {
         try{
             User user = userRepository.findByEmail(username).orElseThrow();
             List<Account> accountList = accountRepository.findAllByUserAndIsDeletedFalse(user);
-            List<AccountResponce> accountResponceList = new ArrayList<>();
+            List<AccountResponse> accountResponceList = new ArrayList<>();
             for (Account account : accountList) {
                 double totalExpenses = 0;
                 double totalIncome = 0;
@@ -103,7 +103,7 @@ public class AccountServiceImpl implements AccountService {
                         totalIncome += transaction.getAmount();
                     }
             }
-            AccountResponce accountResponce = new AccountResponce(
+            AccountResponse accountResponce = new AccountResponse(
                     account.getAccountId(),
                     account.getName(),
                     account.getCurrentBalance(),

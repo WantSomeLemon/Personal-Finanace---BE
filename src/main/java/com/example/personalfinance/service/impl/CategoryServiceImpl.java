@@ -1,6 +1,6 @@
 package com.example.personalfinance.service.impl;
 
-import com.example.personalfinance.bean.responce.BaseResponeDto;
+import com.example.personalfinance.bean.response.BaseResponse;
 import com.example.personalfinance.entity.Category;
 import com.example.personalfinance.entity.Transaction;
 import com.example.personalfinance.entity.User;
@@ -61,9 +61,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ResponseEntity<BaseResponeDto> sortTransaction(Integer categoryId) {
+    public ResponseEntity<BaseResponse> sortTransaction(Integer categoryId) {
         List<Transaction> transactions = transactionRepository.findByCategory(categoryId);
-        return ResponseEntity.ok(new BaseResponeDto("success", transactions));
+        return ResponseEntity.ok(new BaseResponse("success", transactions));
     }
 
 
