@@ -1,11 +1,9 @@
 package com.example.personalfinance.service;
 
+import com.example.personalfinance.bean.request.*;
 import org.springframework.mail.MailException;
 import java.io.UnsupportedEncodingException;
-import com.example.personalfinance.bean.request.ProfileEmail;
-import com.example.personalfinance.bean.request.ProfileImg;
-import com.example.personalfinance.bean.request.ProfileName;
-import com.example.personalfinance.bean.request.ProfilePassword;
+
 import com.example.personalfinance.bean.response.BaseResponse;
 import com.example.personalfinance.entity.User;
 import org.springframework.http.ResponseEntity;
@@ -13,20 +11,20 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface UserService {
-    ResponseEntity<BaseResponse> regisster(User user);
+    ResponseEntity<BaseResponse> register(User user);
 
-    void updateUserProfileImage(ProfileImg profileImg, String userName);
+    void updateUserProfileImage(ProfileImgRequest profileImg, String userName);
 
-    void updateUserProfileName(ProfileName profileName, String userName);
+    void updateUserProfileName(ProfileNameRequest profileName, String userName);
 
-    void updateUserProfileEmail(ProfileEmail profileEmail, String userName);
+    void updateUserProfileEmail(ProfileEmailRequest profileEmail, String userName);
 
     void sendVerificationEmail(String email) throws MailException, UnsupportedEncodingException;
 
-    ResponseEntity<BaseResponse> updatePassord(ProfilePassword profilePassword, String userName);
+    ResponseEntity<BaseResponse> updatePassord(ProfilePasswordRequest profilePassword, String userName);
 
-    ResponseEntity<BaseResponse> login(login login);
+    ResponseEntity<BaseResponse> login(LoginRequest user);
 
-    // loginDto reference to auth part the project
+    // LoginRequest reference to auth part the project
     void newPassword(String email, String password);
 }
