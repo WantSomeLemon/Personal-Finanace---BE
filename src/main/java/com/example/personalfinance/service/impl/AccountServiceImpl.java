@@ -91,7 +91,7 @@ public class AccountServiceImpl implements AccountService {
         try{
             User user = userRepository.findByEmail(username).orElseThrow();
             List<Account> accountList = accountRepository.findAllByUserAndIsDeletedFalse(user);
-            List<AccountResponse> accountResponceList = new ArrayList<>();
+            List<AccountResponse> accountResponseList = new ArrayList<>();
             for (Account account : accountList) {
                 double totalExpenses = 0;
                 double totalIncome = 0;
@@ -103,7 +103,7 @@ public class AccountServiceImpl implements AccountService {
                         totalIncome += transaction.getAmount();
                     }
             }
-            AccountResponse accountResponce = new AccountResponse(
+                AccountResponse accountResponse = new AccountResponse(
                     account.getAccountId(),
                     account.getName(),
                     account.getCurrentBalance(),
@@ -111,9 +111,9 @@ public class AccountServiceImpl implements AccountService {
                     totalExpenses,
                     totalIncome
             );
-            accountResponceList.add(accountResponce);
+            accountResponseList.add(accountResponse);
             }
-            return accountResponceList;
+            return accountResponseList;
         }catch(Exception e ){
             return null;
         }

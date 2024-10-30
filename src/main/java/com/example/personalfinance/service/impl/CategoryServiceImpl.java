@@ -46,18 +46,16 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public String deleteCategories(int category_TD) {
         try {
-            Category entity = (Category) categoryRepository.getById(category_TD);
+            Category entity = categoryRepository.getById(category_TD);
             categoryRepository.delete(entity);
         } catch (Exception e) {
             return e.getMessage();
         }
         return "success";
     }
-     // !!!!!!!!!!!!!!!!NOTICING !!!!!!!!!!!!!!!!!!!!
-     // deleteCategories and getCategoryById have to cast Object to Category to be functional
     @Override
     public Category getCategoryById(Integer id) {
-        return (Category) categoryRepository.findById(id).orElseThrow();
+        return categoryRepository.findById(id).orElseThrow();
     }
 
     @Override
