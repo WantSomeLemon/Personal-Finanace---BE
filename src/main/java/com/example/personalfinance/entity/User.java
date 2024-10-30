@@ -28,12 +28,4 @@ public class User extends BaseEntity {
     
     @Column(name = "profile_image", length = 1048576)
     private byte[] profileImage;
-
-    public byte[] getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(byte[] profileImage) {
-        this.profileImage = profileImage;
-    }
 }
