@@ -9,6 +9,8 @@ import com.example.personalfinance.repository.UserRepository;
 import com.example.personalfinance.service.AccountService;
 import com.example.personalfinance.service.TransactionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,7 +22,12 @@ import java.util.Objects;
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
-    private final TransactionService transactionService;
+    private TransactionService transactionService;
+    
+    @Autowired
+    public void setTransactionService(@Lazy TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
     @Override
     public boolean hasAccount(String accountId) {

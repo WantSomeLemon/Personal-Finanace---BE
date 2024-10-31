@@ -10,7 +10,6 @@ import com.example.personalfinance.util.OTPStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,7 @@ public class UserServiceImpl implements UserService {
   private final OTPStorage otpStorage;
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
-  private final JavaMailSender mailSender;
+//  private final JavaMailSender mailSender;
 
   @Override
   public ResponseEntity<BaseResponse> register(User user) {
