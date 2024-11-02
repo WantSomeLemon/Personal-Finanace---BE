@@ -21,10 +21,10 @@ public interface UserService {
 
     void sendVerificationEmail(String email) throws MailException, UnsupportedEncodingException;
 
+    void newPassword(String email, String password);
+    
     ResponseEntity<BaseResponse> updatePassord(ProfilePasswordRequest profilePassword, String userName);
 
     ResponseEntity<BaseResponse> login(LoginRequest user);
-
-    // LoginRequest reference to auth part the project
-    void newPassword(String email, String password);
+    
 }
