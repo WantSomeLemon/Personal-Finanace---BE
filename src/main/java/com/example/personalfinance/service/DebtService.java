@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional // add cái annotation này là j thế 
 public interface DebtService {
     Debt debtCreate(Debt deb, String uName);
     Debt debtUpdate(Debt deb, Integer debtId);
