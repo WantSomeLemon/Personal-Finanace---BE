@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class Budget {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long budgetId;
+    private Long id;
 
     @Column(name = "budget_status")
     private Long used;
@@ -38,4 +38,9 @@ public class Budget {
         this.balance = balance;
     }
 
+    public Budget(Category category, double amount, User user) {
+        this.category = category;
+        this.amount = amount;
+        this.user = user;
+    }
 }

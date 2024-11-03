@@ -30,7 +30,8 @@ public class AccountController {
 
     @PutMapping("api/accounts")
     public BaseResponse updateAccount(@RequestHeader(value = "Authorization", defaultValue = "") String token,
-                                      Account account, @RequestParam String accountId)
+                                      @RequestBody Account account,
+                                      @RequestParam String accountId)
     {
         accountService.updateAccount(account, Integer.valueOf(accountId));
         return new BaseResponse("success");

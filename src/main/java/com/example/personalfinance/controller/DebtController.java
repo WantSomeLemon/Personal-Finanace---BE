@@ -20,7 +20,8 @@ public class DebtController {
     private final DebtService debtService;
 
     @PostMapping("/api/debs")
-    public ResponseEntity<BaseResponse> createDebts(@RequestHeader(value = "Authorization", defaultValue = "") String token, @RequestBody Debt debt)
+    public ResponseEntity<BaseResponse> createDebts(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+                                                    @RequestBody Debt debt)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         Debt debt1 = debtService.debtCreate(debt, userName);
@@ -28,7 +29,8 @@ public class DebtController {
     }
 
     @GetMapping("api/debts/user")
-    public ResponseEntity<List<Debt>> getDebts(@RequestHeader(value = "Authorization", defaultValue = "") String token, @RequestParam("value") Integer value)
+    public ResponseEntity<List<Debt>> getDebts(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+                                               @RequestParam("value") Integer value)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         List<Debt> Response = debtService.debGet(userName, value);
@@ -38,7 +40,8 @@ public class DebtController {
     }
 
     @DeleteMapping("/api/debts")
-    public ResponseEntity<String> deleteDebt(@RequestHeader(value = "Authorization", defaultValue = "") String token, @RequestParam("debtId") Integer id)
+    public ResponseEntity<String> deleteDebt(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+                                             @RequestParam("debtId") Integer id)
     {
         String Resp = debtService.debtDelete(id);
         HttpHeaders httpHead = new HttpHeaders();
@@ -46,7 +49,8 @@ public class DebtController {
     }
 
     @PutMapping("api/debts")
-    public ResponseEntity<Debt> updateDebt(@RequestHeader(value = "Authorization", defaultValue = "") String token, @RequestBody Debt debt)
+    public ResponseEntity<Debt> updateDebt(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+                                           @RequestBody Debt debt)
     {
        String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
        Integer id = debt.getDebtId();

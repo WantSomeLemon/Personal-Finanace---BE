@@ -37,7 +37,7 @@ public class CategoryController {
         return new BaseResponse(categoryService.addCategories(category, userName), null);
     }
 
-    @DeleteMapping("api/categories/{id}")
+    @DeleteMapping("api/categories/{category_id}")
     public BaseResponse deleteCourse(@PathVariable String category_id)
     {
         return new BaseResponse(categoryService.deleteCategories(Integer.parseInt(category_id)));
