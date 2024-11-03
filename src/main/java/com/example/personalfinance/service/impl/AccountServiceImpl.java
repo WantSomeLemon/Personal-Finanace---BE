@@ -63,7 +63,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void updateAccount(Account account, Integer accountId, String username) {
+    public void updateAccount(Account account, Integer accountId) {
         Account acc = accountRepository.findById(accountId).orElseThrow();
         acc.setCurrentBalance(account.getCurrentBalance());
         acc.setName(account.getName());
