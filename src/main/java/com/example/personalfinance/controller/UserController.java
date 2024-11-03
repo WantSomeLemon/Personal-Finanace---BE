@@ -5,6 +5,7 @@ import com.example.personalfinance.bean.response.BaseResponse;
 import com.example.personalfinance.config.auth.JWTGenerator;
 import com.example.personalfinance.entity.User;
 import com.example.personalfinance.repository.UserRepository;
+import com.example.personalfinance.service.EmailService;
 import com.example.personalfinance.service.UserService;
 import com.example.personalfinance.util.OTPStorage;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +26,15 @@ public class UserController {
     private UserRepository userRepository;
     private JWTGenerator jwtGenerator;
     private OTPStorage otpStorage;
+    private EmailService emailService;
 
     @Autowired
-    public UserController(UserRepository userRepository, JWTGenerator jwtGenerator, UserService userService, OTPStorage otpStorage) {
+    public UserController(UserRepository userRepository, JWTGenerator jwtGenerator, UserService userService, OTPStorage otpStorage, EmailService emailService) {
         this.userRepository = userRepository;
         this.jwtGenerator = jwtGenerator;
         this.userService = userService;
         this.otpStorage = otpStorage;
+        this.emailService = emailService;
     }
 
     @PostMapping("/auth/register")
@@ -45,7 +48,7 @@ public class UserController {
     }
 
     @GetMapping("/auth/validateToken")
-    public ResponseEntity<BaseResponse> home(@RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<BaseResponse> home(@RequestHeader(value = "Authorization", defaultValue = "") String token) {
         Map<Object, Object> data = new HashMap<>();
         if (jwtGenerator.validateToken(jwtGenerator.getTokenFromHeader(token))) {
             Optional<User> user = userRepository.findByEmail(jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token)));
@@ -56,7 +59,7 @@ public class UserController {
     }
 
     @PostMapping("/profile/image")
-    public ResponseEntity<BaseResponse> updatedProfilePicture(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<BaseResponse> updatedProfilePicture(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                                               @ModelAttribute ProfileImgRequest profileImgRequest) {
         try {
             String username = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -68,7 +71,7 @@ public class UserController {
     }
 
     @PostMapping("/profile/name")
-    public ResponseEntity<BaseResponse> updateProfileName(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<BaseResponse> updateProfileName(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                                           @RequestBody ProfileNameRequest profileNameRequest) {
         try {
             String username = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -80,7 +83,7 @@ public class UserController {
     }
 
     @PostMapping("/profile/email")
-    public ResponseEntity<BaseResponse> updateProfileEmail(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<BaseResponse> updateProfileEmail(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                                            @RequestBody ProfileEmailRequest profileEmailRequest) {
         try {
             String username = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -98,7 +101,7 @@ public class UserController {
             if (userRepository.existsByEmail(email)) {
                 return ResponseEntity.badRequest().body(new BaseResponse("User already in use", null));
             }
-            userService.sendVerificationEmail(email); //not done
+            emailService.sendVerificationEmail(email);
             return ResponseEntity.ok(new BaseResponse("success", null));
 
         } catch (Exception e) {
@@ -120,7 +123,7 @@ public class UserController {
     @PostMapping("/auth/forgot-password/send-verification-email")
     public ResponseEntity<BaseResponse> forgetPasswordSendVerificationEmail(@RequestParam(value = "email") String email){
         try{
-            userService.sendVerificationEmail(email);
+            emailService.sendVerificationEmail(email);
             return ResponseEntity.ok(new BaseResponse("success", null));
         }catch (Exception e){
             return ResponseEntity.badRequest().body(new BaseResponse("Fail, try again.", e));
@@ -139,7 +142,7 @@ public class UserController {
     }
     
     @PutMapping("/profile/password")
-    public ResponseEntity<BaseResponse> updatePassword(@RequestParam(value = "Authorization") String token, 
+    public ResponseEntity<BaseResponse> updatePassword(@RequestParam(value = "Authorization", defaultValue = "") String token, 
                                                        @RequestBody ProfilePasswordRequest profilePasswordRequest){
         try{
             String username = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));

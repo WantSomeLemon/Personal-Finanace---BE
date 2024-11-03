@@ -66,7 +66,7 @@ public class BudgetController {
         existingBudget.setCategory(category);
         existingBudget.setAmount(budgetRequest.getAmount());
         budgetService.updateBudget(existingBudget);
-        return new ResponseEntity<>(new BaseResponse("success"), HttpStatus.OK);
+        return ResponseEntity.ok(new BaseResponse("success"));
     }
 
     @DeleteMapping("api/budgets/{id}")
@@ -83,6 +83,7 @@ public class BudgetController {
     @GetMapping("/budget")
     public ResponseEntity<List<Account>> getAllBudget() {
         List<Account> accounts = new ArrayList<>();
+        List<Budget> budgets = budgetService.getAllBudgets();
         return ResponseEntity.ok(accounts);
     }
 

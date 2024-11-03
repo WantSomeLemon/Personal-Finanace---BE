@@ -36,7 +36,8 @@ public class ReportController {
         httpServletResponse.setHeader(headerKey, headerValue);
 
         List<Transaction> transactionList = transactionService.getTransactionsByUserName(userName);
-        TransactionExcelExporter transactionExcelExporter = new TransactionExcelExporter(transactionList);
-        transactionExcelExporter.export(httpServletResponse);
+        //Write to file excel, not do that method.
+//        TransactionExcelExporter transactionExcelExporter = new TransactionExcelExporter(transactionList);
+//        transactionExcelExporter.export(httpServletResponse);
     }
 }

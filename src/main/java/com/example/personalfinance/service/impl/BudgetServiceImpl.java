@@ -19,7 +19,12 @@ import java.util.Optional;
 public class BudgetServiceImpl implements BudgetService {
     private final BudgetRepository budgetRepository;
     private final CategoryService categoryService;
-                  UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    @Override
+    public List<Budget> getAllBudgets() {
+        return budgetRepository.findAll();
+    }
 
     @Override
     public List<Budget> getAllBudgetByUser(User user) {
@@ -55,7 +60,7 @@ public class BudgetServiceImpl implements BudgetService {
         List<Budget> budgetList = budgetRepository.findAllByUser(user.getUserId());
         boolean isAlready = false;
         for (Budget b : budgetList) {
-            if (b.getCategory().getCategoryId()== categoryId){
+            if (b.getCategory().getCategoryId() == categoryId) {
                 isAlready = true;
                 break;
             }

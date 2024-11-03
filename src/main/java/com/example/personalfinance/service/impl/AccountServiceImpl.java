@@ -130,4 +130,10 @@ public class AccountServiceImpl implements AccountService {
     public Account getAccountById(Integer id) {
         return accountRepository.findById(id).orElseThrow();
     }
+
+    @Override
+    public List<Account> getAllAccounts() {
+        List<Account> accountList = accountRepository.findAll();
+        return accountList;
+    }
 }

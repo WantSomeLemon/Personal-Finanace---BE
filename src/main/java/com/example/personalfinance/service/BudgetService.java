@@ -10,6 +10,8 @@ import java.util.Optional;
 
 @Service
 public interface BudgetService {
+    List<Budget> getAllBudgets();
+    
     List<Budget> getAllBudgetByUser(User user);
 
     Optional<Budget> getBudgetById(Long id);

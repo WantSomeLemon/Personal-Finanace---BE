@@ -19,7 +19,7 @@ public class AccountController {
     private final JWTGenerator jwtGenerator;
     private final AccountService accountService;
 
-    @PostMapping("/api/accounts")
+    @PostMapping("")
     public BaseResponse createAccount(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                       @RequestBody Account account)
     {
@@ -28,7 +28,7 @@ public class AccountController {
         return new BaseResponse("success");
     }
 
-    @PutMapping("api/accounts")
+    @PutMapping("")
     public BaseResponse updateAccount(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                       @RequestBody Account account,
                                       @RequestParam String accountId)
@@ -37,7 +37,7 @@ public class AccountController {
         return new BaseResponse("success");
     }
 
-    @GetMapping("api/accounts")
+    @GetMapping("")
     public BaseResponse getAccount(@RequestHeader(value = "Authorization", defaultValue ="") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -45,7 +45,7 @@ public class AccountController {
         return new BaseResponse("success", accounts);
     }
     
-    @DeleteMapping("api/accounts")
+    @DeleteMapping("")
     public BaseResponse deleteAccount(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                       @RequestParam String accountId)
     {
@@ -62,13 +62,13 @@ public class AccountController {
         }
     }
 //Test case ?
-    @GetMapping("/accounts")
+    @GetMapping("/all")
     public ResponseEntity<List<Account>> getAllAccount(){
-        List<Account> accounts = new ArrayList<>();
+        List<Account> accounts = accountService.getAllAccounts();
         return ResponseEntity.ok(accounts);
     }
 //Test case ?
-    @GetMapping("/accounts/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<List<Account>> getAccountById(@PathVariable Integer id){
         List<Account> accounts = new ArrayList<>();
         return ResponseEntity.ok(accounts);

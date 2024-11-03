@@ -26,5 +26,5 @@ public interface AccountService {
 
     Account getAccountById(Integer id);
 
-
+    List<Account> getAllAccounts();
 }
