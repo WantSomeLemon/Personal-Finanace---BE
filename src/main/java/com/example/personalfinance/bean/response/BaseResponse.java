@@ -8,4 +8,8 @@ import lombok.Data;
 public class BaseResponse {
     private Object message;
     private Object data;
+
+    public BaseResponse(Object message) {
+        this.message = message;
+    }
 }
