@@ -1,9 +1,6 @@
 package com.example.personalfinance.service;
 
 import com.example.personalfinance.bean.request.*;
-import org.springframework.mail.MailException;
-import java.io.UnsupportedEncodingException;
-
 import com.example.personalfinance.bean.response.BaseResponse;
 import com.example.personalfinance.entity.User;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +15,6 @@ public interface UserService {
     void updateUserProfileName(ProfileNameRequest profileName, String userName);
 
     void updateUserProfileEmail(ProfileEmailRequest profileEmail, String userName);
-
-    void sendVerificationEmail(String email) throws MailException, UnsupportedEncodingException;
 
     void newPassword(String email, String password);
     

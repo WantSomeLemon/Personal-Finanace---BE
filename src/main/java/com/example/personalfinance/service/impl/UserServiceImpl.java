@@ -2,19 +2,12 @@ package com.example.personalfinance.service.impl;
 
 import com.example.personalfinance.bean.request.*;
 import com.example.personalfinance.bean.response.BaseResponse;
-import com.example.personalfinance.config.SecurityConfig;
 import com.example.personalfinance.config.auth.JWTGenerator;
 import com.example.personalfinance.entity.User;
 import com.example.personalfinance.repository.UserRepository;
-import com.example.personalfinance.service.EmailService;
 import com.example.personalfinance.service.UserService;
-import com.example.personalfinance.util.OTPStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,12 +25,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JWTGenerator jwtGenerator;
-//    private final JavaMailSender mailSender;
-    private final OTPStorage otpStorage;
+
+
 
     @Override
     public ResponseEntity<BaseResponse> register(User user) {
@@ -74,24 +65,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(userName).orElseThrow();
         user.setEmail(profileEmail.getEmail());
         userRepository.save(user);
-    }
-
-    @Override
-    public void sendVerificationEmail(String email) throws MailException, UnsupportedEncodingException {
-        String fromAddress = "bach.nt.2150@aptechlearning.edu.vn";
-        String senderName = "Personal Finance Team";
-        String subject = "Verification Email";
-        String content = "<div>\n" +
-                "    <span style=\"color:#808080;padding: 2px;font-family: sans-serif;\">Paymint Account</span><br>\n" +
-                "    <span style=\"color:#5C6AC4;padding: 2px;font-size:32px;font-family: sans-serif;\"><b>Security code</b></span><br><br>\n" +
-                "    <span style=\"font-family: sans-serif;\">Please use the following security code for the Paymint account.</span><br><br><br>\n" +
-                "    <span style=\"font-family: sans-serif;\">Security code: <b>[[CODE]]</b></span><br><br><br>\n" +
-                "    <span style=\"font-family: sans-serif;\">Thanks,</span><br>\n" +
-                "    <span style=\"font-family: sans-serif;\">The Paymint Team</span>\n" +
-                "</div>";
-
-//        MimeMessageHelper helper = new MimeMessageHelper()
-//        not done
     }
 
     @Override

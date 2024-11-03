@@ -1,4 +1,4 @@
-package com.example.personalfinance.config;
+package com.example.personalfinance.util;
 
 import com.example.personalfinance.entity.Account;
 import com.example.personalfinance.entity.Category;
