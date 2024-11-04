@@ -27,40 +27,45 @@ public class BudgetController {
     private final UserRepository userRepository;
     private final JWTGenerator jwtGenerator;
 
-    @GetMapping("api/budgets")
+    @GetMapping
     public ResponseEntity<BaseResponse> getAllBudgets(@RequestHeader(value = "Authorization", defaultValue = "") String token) {
         User user = userRepository.findByEmail(jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token))).orElseThrow();
         List<Budget> budgets = budgetService.getAllBudgetByUser(user);
-        return new ResponseEntity<>(new BaseResponse("success", budgets), HttpStatus.OK);
+        return ResponseEntity.ok(new BaseResponse("success", budgets));
     }
 
-    @GetMapping("/api/budget/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Budget> getBudgetById(@PathVariable("id") Long id) {
         Budget budget = budgetService.getBudgetById(id).orElse(null);
         if (budget == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
-        return new ResponseEntity<>(budget, HttpStatus.OK);
+//        return new ResponseEntity<>(budget, HttpStatus.OK);
+        return ResponseEntity.ok(budget);
+
     }
 
-    @PostMapping("api/budgets")
+    @PostMapping
     public ResponseEntity<BaseResponse> createBudgets(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                                       @RequestBody BudgetRequest budgetRequest) {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         if (!budgetService.hasAlready(userName, budgetRequest.getCategoryId())) {
             Budget createdBudget = budgetService.createBudget(budgetRequest, userName);
             return new ResponseEntity<>(new BaseResponse("success", createdBudget), HttpStatus.CREATED);
+
         } else {
             return ResponseEntity.ok(new BaseResponse("Already exist"));
         }
     }
 
-    @PutMapping("api/budgets/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<BaseResponse> updateBudget(@PathVariable("id") Long id,
                                                      @RequestBody BudgetRequest budgetRequest) {
         Budget existingBudget = budgetService.getBudgetById(id).orElse(null);
         if (existingBudget == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
         Category category = categoryService.getCategoryById(budgetRequest.getCategoryId());
         existingBudget.setCategory(category);
@@ -69,11 +74,12 @@ public class BudgetController {
         return ResponseEntity.ok(new BaseResponse("success"));
     }
 
-    @DeleteMapping("api/budgets/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse> deleteBudget(@PathVariable("id") Long id) {
         Budget budget = budgetService.getBudgetById(id).orElse(null);
         if (budget == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
         budgetService.deleteBudget(id);
         return ResponseEntity.ok(new BaseResponse("success"));

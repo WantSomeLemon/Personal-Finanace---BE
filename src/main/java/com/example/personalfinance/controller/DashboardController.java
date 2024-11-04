@@ -19,7 +19,7 @@ public class DashboardController {
     private final DashboardService dashboardService;
     private final JWTGenerator jwtGenerator;
 
-    @GetMapping("/api/dashboard/monthly-data")
+    @GetMapping("/monthly-data")
     public ResponseEntity<BaseResponse> getMonthlyData(@RequestHeader(value ="Authorization", defaultValue = "") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -27,14 +27,14 @@ public class DashboardController {
         return ResponseEntity.ok(new BaseResponse("success", data));
     }
 
-    @GetMapping("/api/dashboard/this-month/expenses")
+    @GetMapping("/this-month/expenses")
     public ResponseEntity<BaseResponse> getThisMonthExpenses(@RequestHeader(value = "Authorization", defaultValue = "") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         List<Map<String, Object>> data = dashboardService.getThisMonthExpenses(userName);
         return ResponseEntity.ok(new BaseResponse("success", data));
     }
-    @GetMapping("/api/dashboard/this-month/income")
+    @GetMapping("/this-month/income")
     public ResponseEntity<BaseResponse> getThisMonthIncome(@RequestHeader(value = "Authorization", defaultValue = "") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -42,7 +42,7 @@ public class DashboardController {
         return ResponseEntity.ok(new BaseResponse("success", data));
     }
 
-    @GetMapping("/api/dashboard/this-month/total/income-and-expenses")
+    @GetMapping("/this-month/total/income-and-expenses")
     public ResponseEntity<BaseResponse> getThisMonthTotalIncomeAndExpenses(@RequestHeader(value = "Authorization", defaultValue = "") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));

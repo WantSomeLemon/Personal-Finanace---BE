@@ -23,7 +23,7 @@ public class GoalsController {
     private final JWTGenerator jwtGenerator;
     private final UserRepository userRepository;
 
-    @PostMapping("/api/goals")
+    @PostMapping
     public ResponseEntity<BaseResponse> createGoal(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                                    @RequestBody Goals goal)
     {
@@ -33,7 +33,7 @@ public class GoalsController {
         return ResponseEntity.ok(new BaseResponse("success"));
     }
 
-    @PutMapping("/api/goals/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<BaseResponse> updateGoal(@PathVariable("id") Long id,
                                                    @RequestBody Goals goal)
     {
@@ -41,38 +41,40 @@ public class GoalsController {
         return ResponseEntity.ok(new BaseResponse("success", updatedGoal));
     }
 
-    @DeleteMapping("/api/goals/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse> deleteGoal(@PathVariable("id") Long id)
     {
         goalsService.deleteGoal(id);
         return ResponseEntity.ok(new BaseResponse("success"));
     }
 
-    @GetMapping("/api/goals/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Goals> getGoal(@PathVariable("id") Long id)
     {
         Optional<Goals> goal = goalsService.getGoal(id);
         if(goal.isPresent()){
-            return new ResponseEntity<>(goal.get(), HttpStatus.OK);
+//            return new ResponseEntity<>(goal.get(), HttpStatus.OK);
+            return ResponseEntity.ok(goal.get());
         }else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
     }
 
-    @GetMapping("/api/goals")
+    @GetMapping
     public ResponseEntity<BaseResponse> getAllGoals(@RequestHeader(value = "Authorization", defaultValue ="") String token)
     {
         User user = userRepository.findByEmail(jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token))).orElseThrow();
         List<Goals> goals = goalsService.getAllGoalsByUser(user);
         return ResponseEntity.ok(new BaseResponse("success", goals));
     }
-    @GetMapping("/goals")
+    @GetMapping
     public ResponseEntity<List<Goals>> getAllTesGoals(){
         List<Goals> goals = new ArrayList<>();
         return ResponseEntity.ok(goals);
     }
 
-    @GetMapping("/goals/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<List<Goals>> getTestGoalsById(@PathVariable Integer id){
         List<Goals> goals = new ArrayList<>();
         return ResponseEntity.ok(goals);

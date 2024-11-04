@@ -17,7 +17,7 @@ public class TransactionController {
     private final TransactionService transactionService;
     private final JWTGenerator jwtGenerator;
 
-    @GetMapping("/api/transactions")
+    @GetMapping
     public BaseResponse getTransactions(@RequestHeader(value = "Authorization", defaultValue = "") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -25,7 +25,7 @@ public class TransactionController {
         return new BaseResponse("success", transactions);
     }
 
-    @PostMapping("/api/transactions")
+    @PostMapping
     public BaseResponse addTransactions(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                         @RequestBody TransactionRequest transactionRequest)
     {
@@ -33,7 +33,7 @@ public class TransactionController {
         transactionService.addTransaction(transactionRequest, userName);
         return new BaseResponse("success", null);
     }
-    @PutMapping("/api/transactions")
+    @PutMapping
     public BaseResponse updateTransactions(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                            @RequestBody TransactionRequest transactionRequest,
                                            @RequestParam String transactionId)
@@ -42,7 +42,7 @@ public class TransactionController {
         transactionService.updateTransaction(transactionRequest, Integer.valueOf(transactionId), userName);
         return new BaseResponse("success", null);
     }
-    @DeleteMapping("/api/transactions")
+    @DeleteMapping
     public BaseResponse deleteTransactions(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                            @RequestParam String transactionId)
     {

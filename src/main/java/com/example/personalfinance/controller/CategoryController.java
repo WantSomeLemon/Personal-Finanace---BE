@@ -20,7 +20,7 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final JWTGenerator jwtGenerator;
 
-    @GetMapping("/api/categories")
+    @GetMapping
     public BaseResponse getCategories(@RequestHeader(value = "Authorization", defaultValue = "") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -28,7 +28,7 @@ public class CategoryController {
         return new BaseResponse("success", categories);
     }
 
-    @PostMapping("api/categories")
+    @PostMapping
     public BaseResponse addCategories(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                     @RequestBody Category category)
     {
@@ -37,13 +37,13 @@ public class CategoryController {
         return new BaseResponse(categoryService.addCategories(category, userName), null);
     }
 
-    @DeleteMapping("api/categories/{category_id}")
+    @DeleteMapping("/{category_id}")
     public BaseResponse deleteCourse(@PathVariable String category_id)
     {
         return new BaseResponse(categoryService.deleteCategories(Integer.parseInt(category_id)));
     }
 
-    @GetMapping("api/categories/total-transactions/{id}")
+    @GetMapping("/total-transactions/{id}")
     public ResponseEntity<BaseResponse> sortTransaction(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                                         @PathVariable("id") Integer categorId)
     {

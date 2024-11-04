@@ -23,7 +23,7 @@ public class ReportController {
     private final JWTGenerator jwtGenerator;
     private final TransactionService transactionService;
 
-    @GetMapping("/api/report/transaction/excel")
+    @GetMapping("/transaction/excel")
     public void transactionReportExcel(@RequestHeader(value = "Authorization", defaultValue = "") String token, HttpServletResponse httpServletResponse) throws IOException
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));

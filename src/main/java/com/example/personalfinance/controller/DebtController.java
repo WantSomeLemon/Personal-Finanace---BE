@@ -19,7 +19,7 @@ public class DebtController {
     private final JWTGenerator jwtGenerator;
     private final DebtService debtService;
 
-    @PostMapping("/api/debs")
+    @PostMapping
     public ResponseEntity<BaseResponse> createDebts(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                                     @RequestBody Debt debt)
     {
@@ -28,7 +28,7 @@ public class DebtController {
         return ResponseEntity.ok(new BaseResponse("success", debt1));
     }
 
-    @GetMapping("api/debts/user")
+    @GetMapping("/user")
     public ResponseEntity<List<Debt>> getDebts(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                                @RequestParam("value") Integer value)
     {
@@ -36,10 +36,11 @@ public class DebtController {
         List<Debt> Response = debtService.debGet(userName, value);
         HttpHeaders httpHead = new HttpHeaders();
         httpHead.add("info", "getting the list of Debt Values");
-        return ResponseEntity.status(HttpStatus.OK).headers(httpHead).body(Response);
+//        return ResponseEntity.status(HttpStatus.OK).headers(httpHead).body(Response);
+        return ResponseEntity.ok().headers(httpHead).body(Response);
     }
 
-    @DeleteMapping("/api/debts")
+    @DeleteMapping
     public ResponseEntity<String> deleteDebt(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                              @RequestParam("debtId") Integer id)
     {
@@ -48,7 +49,7 @@ public class DebtController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).headers(httpHead).body(Resp);
     }
 
-    @PutMapping("api/debts")
+    @PutMapping
     public ResponseEntity<Debt> updateDebt(@RequestHeader(value = "Authorization", defaultValue = "") String token,
                                            @RequestBody Debt debt)
     {
@@ -60,12 +61,13 @@ public class DebtController {
        return ResponseEntity.status(HttpStatus.ACCEPTED).headers(httpHead).body(debt1);
     }
 
-    @GetMapping("api/debts")
+    @GetMapping
     public ResponseEntity<List<Debt>> debtofAll()
     {
         List<Debt> Response = debtService.getAllDebts();
         HttpHeaders httpHead = new HttpHeaders();
         httpHead.add("info", "getting the list of Debt Values");
-        return ResponseEntity.status(HttpStatus.OK).headers(httpHead).body(Response);
+//        return ResponseEntity.status(HttpStatus.OK).headers(httpHead).body(Response);
+        return ResponseEntity.ok().headers(httpHead).body(Response);
     }
 }
