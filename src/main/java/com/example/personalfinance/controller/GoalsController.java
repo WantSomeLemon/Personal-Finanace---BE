@@ -68,13 +68,13 @@ public class GoalsController {
         List<Goals> goals = goalsService.getAllGoalsByUser(user);
         return ResponseEntity.ok(new BaseResponse("success", goals));
     }
-    @GetMapping
+    @GetMapping("/test")
     public ResponseEntity<List<Goals>> getAllTesGoals(){
         List<Goals> goals = new ArrayList<>();
         return ResponseEntity.ok(goals);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/test/{id}")
     public ResponseEntity<List<Goals>> getTestGoalsById(@PathVariable Integer id){
         List<Goals> goals = new ArrayList<>();
         return ResponseEntity.ok(goals);
