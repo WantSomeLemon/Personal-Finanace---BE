@@ -108,32 +108,32 @@ public class SecurityConfig {
   }
 
   // Configures embedded Tomcat server to redirect HTTP to HTTPS
-  @Bean
-  public ServletWebServerFactory servletContainer() {
-    var tomcat = new TomcatServletWebServerFactory() {
-      @Override
-      protected void postProcessContext(Context context) {
-        var securityConstraint = new SecurityConstraint();
-        securityConstraint.setUserConstraint("CONFIDENTIAL"); // Forces HTTPS for all requests
-
-        var collection = new SecurityCollection();
-        collection.addPattern("/*"); // Apply to all URL patterns
-        securityConstraint.addCollection(collection);
-        context.addConstraint(securityConstraint);
-      }
-    };
-    // Add HTTP connector for redirecting HTTP requests to HTTPS
-    tomcat.addAdditionalTomcatConnectors(redirectConnector());
-    return tomcat;
-  }
-
-  // Configure an HTTP connector that redirects requests to HTTPS
-  private Connector redirectConnector() {
-    var connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-    connector.setScheme("http");
-    connector.setPort(8081); // HTTP port
-    connector.setSecure(false);
-    connector.setRedirectPort(8443); // Redirects to HTTPS port
-    return connector;
-  }
+//  @Bean
+//  public ServletWebServerFactory servletContainer() {
+//    var tomcat = new TomcatServletWebServerFactory() {
+//      @Override
+//      protected void postProcessContext(Context context) {
+//        var securityConstraint = new SecurityConstraint();
+//        securityConstraint.setUserConstraint("CONFIDENTIAL"); // Forces HTTPS for all requests
+//
+//        var collection = new SecurityCollection();
+//        collection.addPattern("/*"); // Apply to all URL patterns
+//        securityConstraint.addCollection(collection);
+//        context.addConstraint(securityConstraint);
+//      }
+//    };
+//    // Add HTTP connector for redirecting HTTP requests to HTTPS
+//    tomcat.addAdditionalTomcatConnectors(redirectConnector());
+//    return tomcat;
+//  }
+//
+//  // Configure an HTTP connector that redirects requests to HTTPS
+//  private Connector redirectConnector() {
+//    var connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+//    connector.setScheme("http");
+//    connector.setPort(8081); // HTTP port
+//    connector.setSecure(false);
+//    connector.setRedirectPort(8443); // Redirects to HTTPS port
+//    return connector;
+//  }
 }
