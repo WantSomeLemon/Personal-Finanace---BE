@@ -91,7 +91,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<BaseResponse> login(LoginRequest user) {
         User userEntity = userRepository.findByEmail(user.getEmail()).orElse(null);
-        if(!userRepository.existsByEmail(user.getEmail())) {
+//        if(!userRepository.existsByEmail(user.getEmail())) {
+        if(userEntity == null) {
             return ResponseEntity.badRequest().body(new BaseResponse("Incorrect Email or Password...", null));
         }
         if(!new BCryptPasswordEncoder().matches(user.getPassword(), userEntity.getPassword())) {
@@ -102,6 +103,7 @@ public class UserServiceImpl implements UserService {
         String token = jwtGenerator.generateToken(authentication);
         Map<Object, Object> data = new HashMap<>();
         data.put("token", token);
+//        return new ResponseEntity<>(new BaseResponse("Login Success", data));
         return ResponseEntity.ok(new BaseResponse("Login Success", data));
     }
 }
