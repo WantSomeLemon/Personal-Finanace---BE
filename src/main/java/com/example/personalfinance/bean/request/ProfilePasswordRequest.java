@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class ProfilePasswordRequest {
-    private String Password;
+    private String newPassword;
     private String oldPassword;
 }

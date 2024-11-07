@@ -39,7 +39,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
       SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }else{
        // neu khong co token thi tra ve 401/ tuc chua login
-      // nhung neu URL tu page login thi can phai cho no di qua de den controller =filterChain.doFilter(request, response);
+      // nhung neu URL tu page login thi can phai cho no di qua de den controller = filterChain.doFilter(request, response);
       filterChain.doFilter(request, response);
     }
   }

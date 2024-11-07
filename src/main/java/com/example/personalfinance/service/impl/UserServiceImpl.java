@@ -77,11 +77,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<BaseResponse> updatePassord(ProfilePasswordRequest profilePassword, String userName) {
         User user = userRepository.findByEmail(userName).orElseThrow();
+        //getOldPassword: request
+        //getNewPassword: request
+        //user.getPassword: database
         if(new BCryptPasswordEncoder().matches(profilePassword.getOldPassword(), user.getPassword())) {
-            if(new BCryptPasswordEncoder().matches(profilePassword.getPassword(), user.getPassword())) {
+            if(new BCryptPasswordEncoder().matches(profilePassword.getNewPassword(), user.getPassword())) {
                 return ResponseEntity.badRequest().body(new BaseResponse("New Password can't be same as Old Password!", null));
             }
-            user.setPassword(passwordEncoder.encode(profilePassword.getPassword()));
+            user.setPassword(passwordEncoder.encode(profilePassword.getNewPassword()));
             userRepository.save(user);
             return ResponseEntity.ok(new BaseResponse("Password Updated Successfully", null));
         }
