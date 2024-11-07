@@ -10,6 +10,7 @@ import com.example.personalfinance.entity.User;
 import com.example.personalfinance.repository.UserRepository;
 import com.example.personalfinance.service.BudgetService;
 import com.example.personalfinance.service.CategoryService;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class BudgetController {
     private final JWTGenerator jwtGenerator;
 
     @GetMapping
-    public ResponseEntity<BaseResponse> getAllBudgets(@RequestHeader(value = "Authorization", defaultValue = "") String token) {
+    public ResponseEntity<BaseResponse> getAllBudgets(@RequestHeader(value = "Authorization") String token) {
         User user = userRepository.findByEmail(jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token))).orElseThrow();
         List<Budget> budgets = budgetService.getAllBudgetByUser(user);
         return ResponseEntity.ok(new BaseResponse("success", budgets));
@@ -47,7 +48,7 @@ public class BudgetController {
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse> createBudgets(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public ResponseEntity<BaseResponse> createBudgets(@RequestHeader(value = "Authorization") String token,
                                                       @RequestBody BudgetRequest budgetRequest) {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         if (!budgetService.hasAlready(userName, budgetRequest.getCategoryId())) {

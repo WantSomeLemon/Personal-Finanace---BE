@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @GetMapping("/auth/validateToken")
-    public ResponseEntity<BaseResponse> home(@RequestHeader(value = "Authorization", defaultValue = "") String token) {
+    public ResponseEntity<BaseResponse> home(@RequestHeader(value = "Authorization") String token) {
         Map<Object, Object> data = new HashMap<>();
         if (jwtGenerator.validateToken(jwtGenerator.getTokenFromHeader(token))) {
             Optional<User> user = userRepository.findByEmail(jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token)));
@@ -59,7 +59,7 @@ public class UserController {
     }
 
     @PostMapping("/profile/image")
-    public ResponseEntity<BaseResponse> updatedProfilePicture(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public ResponseEntity<BaseResponse> updatedProfilePicture(@RequestHeader(value = "Authorization") String token,
                                                               @ModelAttribute ProfileImgRequest profileImgRequest) {
         try {
             String username = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -71,7 +71,7 @@ public class UserController {
     }
 
     @PostMapping("/profile/name")
-    public ResponseEntity<BaseResponse> updateProfileName(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public ResponseEntity<BaseResponse> updateProfileName(@RequestHeader(value = "Authorization") String token,
                                                           @RequestBody ProfileNameRequest profileNameRequest) {
         try {
             String username = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -83,7 +83,7 @@ public class UserController {
     }
 
     @PostMapping("/profile/email")
-    public ResponseEntity<BaseResponse> updateProfileEmail(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public ResponseEntity<BaseResponse> updateProfileEmail(@RequestHeader(value = "Authorization") String token,
                                                            @RequestBody ProfileEmailRequest profileEmailRequest) {
         try {
             String username = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -142,7 +142,7 @@ public class UserController {
     }
     
     @PutMapping("/profile/password")
-    public ResponseEntity<BaseResponse> updatePassword(@RequestParam(value = "Authorization", defaultValue = "") String token, 
+    public ResponseEntity<BaseResponse> updatePassword(@RequestParam(value = "Authorization") String token, 
                                                        @RequestBody ProfilePasswordRequest profilePasswordRequest){
         try{
             String username = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));

@@ -20,7 +20,7 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping
-    public BaseResponse createAccount(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public BaseResponse createAccount(@RequestHeader(value = "Authorization") String token,
                                       @RequestBody Account account)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -29,7 +29,7 @@ public class AccountController {
     }
 
     @PutMapping
-    public BaseResponse updateAccount(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public BaseResponse updateAccount(@RequestHeader(value = "Authorization") String token,
                                       @RequestBody Account account,
                                       @RequestParam String accountId)
     {
@@ -46,7 +46,7 @@ public class AccountController {
     }
     
     @DeleteMapping
-    public BaseResponse deleteAccount(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public BaseResponse deleteAccount(@RequestHeader(value = "Authorization") String token,
                                       @RequestParam String accountId)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));

@@ -24,7 +24,7 @@ public class ReportController {
     private final TransactionService transactionService;
 
     @GetMapping("/transaction/excel")
-    public void transactionReportExcel(@RequestHeader(value = "Authorization", defaultValue = "") String token, HttpServletResponse httpServletResponse) throws IOException
+    public void transactionReportExcel(@RequestHeader(value = "Authorization") String token, HttpServletResponse httpServletResponse) throws IOException
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         httpServletResponse.setContentType("application/octet-stream");

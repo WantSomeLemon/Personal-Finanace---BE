@@ -20,7 +20,7 @@ public class DashboardController {
     private final JWTGenerator jwtGenerator;
 
     @GetMapping("/monthly-data")
-    public ResponseEntity<BaseResponse> getMonthlyData(@RequestHeader(value ="Authorization", defaultValue = "") String token)
+    public ResponseEntity<BaseResponse> getMonthlyData(@RequestHeader(value ="Authorization") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         List<Map<String, Object>> data = dashboardService.getMonthlyData(userName);
@@ -28,14 +28,14 @@ public class DashboardController {
     }
 
     @GetMapping("/this-month/expenses")
-    public ResponseEntity<BaseResponse> getThisMonthExpenses(@RequestHeader(value = "Authorization", defaultValue = "") String token)
+    public ResponseEntity<BaseResponse> getThisMonthExpenses(@RequestHeader(value = "Authorization") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         List<Map<String, Object>> data = dashboardService.getThisMonthExpenses(userName);
         return ResponseEntity.ok(new BaseResponse("success", data));
     }
     @GetMapping("/this-month/income")
-    public ResponseEntity<BaseResponse> getThisMonthIncome(@RequestHeader(value = "Authorization", defaultValue = "") String token)
+    public ResponseEntity<BaseResponse> getThisMonthIncome(@RequestHeader(value = "Authorization") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         List<Map<String, Object>> data = dashboardService.getThisMonthIncome(userName);
@@ -43,7 +43,7 @@ public class DashboardController {
     }
 
     @GetMapping("/this-month/total/income-and-expenses")
-    public ResponseEntity<BaseResponse> getThisMonthTotalIncomeAndExpenses(@RequestHeader(value = "Authorization", defaultValue = "") String token)
+    public ResponseEntity<BaseResponse> getThisMonthTotalIncomeAndExpenses(@RequestHeader(value = "Authorization") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         Map<String, Object> data = dashboardService.getThisMonthTotalIncomeAndExpenses(userName);

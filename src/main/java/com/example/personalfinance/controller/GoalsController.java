@@ -24,7 +24,7 @@ public class GoalsController {
     private final UserRepository userRepository;
 
     @PostMapping
-    public ResponseEntity<BaseResponse> createGoal(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public ResponseEntity<BaseResponse> createGoal(@RequestHeader(value = "Authorization") String token,
                                                    @RequestBody Goals goal)
     {
         User user = userRepository.findByEmail(jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token))).orElseThrow();

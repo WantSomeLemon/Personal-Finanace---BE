@@ -18,7 +18,7 @@ public class TransactionController {
     private final JWTGenerator jwtGenerator;
 
     @GetMapping
-    public BaseResponse getTransactions(@RequestHeader(value = "Authorization", defaultValue = "") String token)
+    public BaseResponse getTransactions(@RequestHeader(value = "Authorization") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         List<Transaction> transactions = transactionService.getTransactionsByUserName(userName);
@@ -26,7 +26,7 @@ public class TransactionController {
     }
 
     @PostMapping
-    public BaseResponse addTransactions(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public BaseResponse addTransactions(@RequestHeader(value = "Authorization") String token,
                                         @RequestBody TransactionRequest transactionRequest)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -34,7 +34,7 @@ public class TransactionController {
         return new BaseResponse("success", null);
     }
     @PutMapping
-    public BaseResponse updateTransactions(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public BaseResponse updateTransactions(@RequestHeader(value = "Authorization") String token,
                                            @RequestBody TransactionRequest transactionRequest,
                                            @RequestParam String transactionId)
     {
@@ -43,7 +43,7 @@ public class TransactionController {
         return new BaseResponse("success", null);
     }
     @DeleteMapping
-    public BaseResponse deleteTransactions(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public BaseResponse deleteTransactions(@RequestHeader(value = "Authorization") String token,
                                            @RequestParam String transactionId)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));

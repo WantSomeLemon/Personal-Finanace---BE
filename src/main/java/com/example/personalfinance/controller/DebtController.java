@@ -20,7 +20,7 @@ public class DebtController {
     private final DebtService debtService;
 
     @PostMapping
-    public ResponseEntity<BaseResponse> createDebts(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public ResponseEntity<BaseResponse> createDebts(@RequestHeader(value = "Authorization") String token,
                                                     @RequestBody Debt debt)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -29,7 +29,7 @@ public class DebtController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<Debt>> getDebts(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public ResponseEntity<List<Debt>> getDebts(@RequestHeader(value = "Authorization") String token,
                                                @RequestParam("value") Integer value)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
@@ -41,7 +41,7 @@ public class DebtController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteDebt(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public ResponseEntity<String> deleteDebt(@RequestHeader(value = "Authorization") String token,
                                              @RequestParam("debtId") Integer id)
     {
         String Resp = debtService.debtDelete(id);
@@ -50,7 +50,7 @@ public class DebtController {
     }
 
     @PutMapping
-    public ResponseEntity<Debt> updateDebt(@RequestHeader(value = "Authorization", defaultValue = "") String token,
+    public ResponseEntity<Debt> updateDebt(@RequestHeader(value = "Authorization") String token,
                                            @RequestBody Debt debt)
     {
        String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
