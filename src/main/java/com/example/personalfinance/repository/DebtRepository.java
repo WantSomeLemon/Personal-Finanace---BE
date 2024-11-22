@@ -1,11 +1,12 @@
 package com.example.personalfinance.repository;
 
-import com.example.personalfinance.entity.Debt;
-import com.example.personalfinance.entity.User;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.example.personalfinance.entity.Debt;
+import com.example.personalfinance.entity.User;
 
 @Repository
 public interface DebtRepository extends JpaRepository<Debt, Integer> {

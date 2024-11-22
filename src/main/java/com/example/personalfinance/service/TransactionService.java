@@ -11,7 +11,7 @@ import java.util.List;
 public interface TransactionService {
     List<Transaction> getTransactionsByUserName(String userName);
 
-    List<Transaction> getTransactionsByAccount(String userName, Account account);
+    List<Transaction> getTransactionsByAccount(Account account);
 
     void addTransaction(TransactionRequest transactionRequest, String userName);
 

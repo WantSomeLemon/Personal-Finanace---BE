@@ -1,24 +1,31 @@
 package com.example.personalfinance.repository;
 
-import com.example.personalfinance.entity.Budget;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.example.personalfinance.entity.Budget;
 
 @Repository
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
-    @Query(value = "SELECT budget.id, budget.amount, budget.category_id, budget.user_id, " +
-            "(SELECT SUM(transaction.amount) " +
-            "FROM transaction WHERE transaction.user_id = ?1 && budget.category_id = transaction.category_category_id " +
-            "&& transaction.date_time >= UNIX_TIMESTAMP('2023-07-01 00:00:00') * 1000 " +
-            "AND transaction.date_time <= UNIX_TIMESTAMP('2023-07-31 00:00:00') * 1000 ) AS used, " +
-            "(budget.amount - (SELECT SUM(transaction.amount) " +
-            "FROM transaction WHERE transaction.user_id = ?1 && budget.category_id = transaction.category_category_id " +
-            "&& transaction.date_time >= UNIX_TIMESTAMP('2023-07-01 00:00:00') * 1000 " +
-            "AND transaction.date_time <= UNIX_TIMESTAMP('2023-07-31 00:00:00') * 1000 )) AS balance " +
-            "FROM budget WHERE budget.user_id=?1", nativeQuery = true)
-    List<Budget> findAllByUser(Integer user_id);
+    @Query(value = "SELECT budgets.id, budgets.amount, budgets.category_id, budgets.user_id, " +
+    "(SELECT SUM(transactions.amount) " +
+    "FROM transactions " +
+    "WHERE transactions.user_id = ?1 " +
+    "AND budgets.category_id = transactions.category_id " +
+    "AND transactions.date_time >= UNIX_TIMESTAMP('2023-07-01 00:00:00') * 1000 " +
+    "AND transactions.date_time <= UNIX_TIMESTAMP('2023-07-31 23:59:59') * 1000) AS used, " +
+    "(budgets.amount - (SELECT SUM(transactions.amount) " +
+    "FROM transactions " +
+    "WHERE transactions.user_id = ?1 " +
+    "AND budgets.category_id = transactions.category_id " +
+    "AND transactions.date_time >= UNIX_TIMESTAMP('2023-07-01 00:00:00') * 1000 " +
+    "AND transactions.date_time <= UNIX_TIMESTAMP('2023-07-31 23:59:59') * 1000)) AS balance " +
+    "FROM budgets " +
+    "WHERE budgets.user_id = ?1", nativeQuery = true)
+List<Object[]> findAllByUser(Integer user_id);
+
 
 }

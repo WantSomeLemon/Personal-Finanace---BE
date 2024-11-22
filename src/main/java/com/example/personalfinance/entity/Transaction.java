@@ -20,7 +20,7 @@ public class Transaction extends BaseEntity implements Comparable<Transaction>  
     @Column(name = "date_time")
     private Long dateTime;
     @ManyToOne
-    @JoinColumn()
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne

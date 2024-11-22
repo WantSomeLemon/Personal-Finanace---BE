@@ -1,6 +1,13 @@
 package com.example.personalfinance.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,10 +15,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-public class Budget {
+public class Budget extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long budgetId;
+    private Long id;
 
     @Column(name = "budget_status")
     private Long used;
@@ -38,4 +45,9 @@ public class Budget {
         this.balance = balance;
     }
 
+    public Budget(Category category, double amount, User user) {
+        this.category = category;
+        this.amount = amount;
+        this.user = user;
+    }
 }

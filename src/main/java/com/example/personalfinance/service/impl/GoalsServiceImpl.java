@@ -36,7 +36,7 @@ public class GoalsServiceImpl implements GoalsService {
        if(existingGoal.isPresent()) {
            goalsRepository.deleteById(id);
        }else {
-           throw new RuntimeException("Goal with id " + id + " not exist.");
+           throw new IllegalArgumentException("Goal with id " + id + " not exist.");
        }
     }
 

@@ -1,32 +1,38 @@
 package com.example.personalfinance.service;
 
-import org.springframework.mail.MailException;
 import java.io.UnsupportedEncodingException;
-import com.example.personalfinance.bean.request.ProfileEmail;
-import com.example.personalfinance.bean.request.ProfileImg;
-import com.example.personalfinance.bean.request.ProfileName;
-import com.example.personalfinance.bean.request.ProfilePassword;
-import com.example.personalfinance.bean.response.BaseResponse;
-import com.example.personalfinance.entity.User;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.example.personalfinance.bean.request.LoginRequest;
+import com.example.personalfinance.bean.request.ProfileEmailRequest;
+import com.example.personalfinance.bean.request.ProfileImgRequest;
+import com.example.personalfinance.bean.request.ProfileNameRequest;
+import com.example.personalfinance.bean.request.ProfilePasswordRequest;
+import com.example.personalfinance.bean.response.BaseResponse;
+import com.example.personalfinance.entity.User;
+
+import jakarta.mail.MessagingException;
+
 @Service
 public interface UserService {
-    ResponseEntity<BaseResponse> regisster(User user);
 
-    void updateUserProfileImage(ProfileImg profileImg, String userName);
+    void updateUserProfileImage(ProfileImgRequest profileImg, String userName);
 
-    void updateUserProfileName(ProfileName profileName, String userName);
+    void updateUserProfileName(ProfileNameRequest profileName, String userName);
 
-    void updateUserProfileEmail(ProfileEmail profileEmail, String userName);
+    void updateUserProfileEmail(ProfileEmailRequest profileEmail, String userName);
 
-    void sendVerificationEmail(String email) throws MailException, UnsupportedEncodingException;
+    void sendVerificationEmail(String email) throws MessagingException, UnsupportedEncodingException;
 
-    ResponseEntity<BaseResponse> updatePassord(ProfilePassword profilePassword, String userName);
-
-    ResponseEntity<BaseResponse> login(login login);
-
-    // loginDto reference to auth part the project
     void newPassword(String email, String password);
+    
+    ResponseEntity<BaseResponse> updatePassord(ProfilePasswordRequest profilePassword, String userName);
+
+    ResponseEntity<BaseResponse> register(User user);
+   
+    ResponseEntity<BaseResponse> login(LoginRequest user);
+     ResponseEntity<BaseResponse> getUserProfile(String token);
+    
 }

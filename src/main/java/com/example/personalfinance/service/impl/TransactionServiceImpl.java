@@ -11,6 +11,8 @@ import com.example.personalfinance.service.AccountService;
 import com.example.personalfinance.service.CategoryService;
 import com.example.personalfinance.service.TransactionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.Collections;
@@ -23,7 +25,13 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
     private final CategoryService categoryService;
-    private final AccountService accountService;
+    private  AccountService accountService;
+    
+    @Autowired
+    public void setAccountService(@Lazy AccountService accountService) {
+        this.accountService = accountService;
+    }
+    
     @Override
     public List<Transaction> getTransactionsByUserName(String userName) {
         try {
@@ -37,9 +45,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> getTransactionsByAccount(String userName, Account account) {
+    public List<Transaction> getTransactionsByAccount(Account account) {
         try {
-            User user = userRepository.findByEmail(userName).orElseThrow();
             return transactionRepository.findAllByAccount(account);
         } catch (UsernameNotFoundException e) {
            return null;

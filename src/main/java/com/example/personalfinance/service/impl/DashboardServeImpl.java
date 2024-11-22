@@ -7,6 +7,8 @@ import com.example.personalfinance.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,36 +26,65 @@ public class DashboardServeImpl implements DashboardService {
 
     @Override
     public List<Map<String, Object>> convertMonthlyData(List<Object[]> queryResult) {
-        return List.of();
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Object[] o : queryResult) {
+            Map<String, Object> temp = new LinkedHashMap<>();
+            temp.put("month", o[0]);
+            temp.put("expenses", o[1]);
+            temp.put("income", o[2]);
+            result.add(temp);
+        }
+        return result;
     }
 
     @Override
     public List<Map<String, Object>> convertThisMonthExpenses(List<Object[]> queryResult) {
-        return List.of();
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Object[] o : queryResult) {
+            Map<String, Object> temp = new LinkedHashMap<>();
+            temp.put("category", o[0]);
+            temp.put("expenses", o[1]);
+            result.add(temp);
+        }
+        return result;
     }
 
     @Override
     public List<Map<String, Object>> convertThisMonthIncome(List<Object[]> queryResult) {
-        return List.of();
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Object[] o : queryResult) {
+            Map<String, Object> temp = new LinkedHashMap<>();
+            temp.put("category", o[0]);
+            temp.put("income", o[1]);
+            result.add(temp);
+        }
+        return result;
     }
 
     @Override
     public Map<String, Object> convertThisMonthTotalIncomeAndExpenses(List<Object[]> queryResult) {
-        return Map.of();
+        Object[] row = queryResult.get(0);
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("total expenses", row[0]);
+        result.put("total income", row[1]);
+        return result;
     }
 
     @Override
     public List<Map<String, Object>> getThisMonthExpenses(String userName) {
-        return List.of();
+        User user = userRepository.findByEmail(userName).orElseThrow();
+        return convertThisMonthExpenses(transactionRepository.getThisMonthExpenses(user.getUserId()));
     }
 
     @Override
     public List<Map<String, Object>> getThisMonthIncome(String userName) {
-        return List.of();
+        User user = userRepository.findByEmail(userName).orElseThrow();
+        return convertThisMonthIncome(transactionRepository.getThisMonthIncome(user.getUserId()));
     }
 
     @Override
     public Map<String, Object> getThisMonthTotalIncomeAndExpenses(String userName) {
-        return Map.of();
+        User user = userRepository.findByEmail(userName).orElseThrow();
+        return convertThisMonthTotalIncomeAndExpenses(transactionRepository.getThisMonthTotalIncomeAndExpenses(user.getUserId()));
     }
 }

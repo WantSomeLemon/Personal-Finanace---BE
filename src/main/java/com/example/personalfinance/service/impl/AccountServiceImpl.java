@@ -9,6 +9,8 @@ import com.example.personalfinance.repository.UserRepository;
 import com.example.personalfinance.service.AccountService;
 import com.example.personalfinance.service.TransactionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,7 +22,13 @@ import java.util.Objects;
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
-    private final TransactionService transactionService;
+    @Lazy
+    private TransactionService transactionService;
+    
+    @Autowired
+    public void setTransactionService(@Lazy TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
     @Override
     public boolean hasAccount(String accountId) {
@@ -56,7 +64,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void updateAccount(Account account, Integer accountId, String username) {
+    public void updateAccount(Account account, Integer accountId) {
         Account acc = accountRepository.findById(accountId).orElseThrow();
         acc.setCurrentBalance(account.getCurrentBalance());
         acc.setName(account.getName());
@@ -79,7 +87,7 @@ public class AccountServiceImpl implements AccountService {
     public void deleteAccount(String accountId) {
         try{
             Account entity = accountRepository.findById(Integer.valueOf(accountId)).orElseThrow();
-            entity.setIsDeleted(true);
+            entity.setDeleted(true);
             accountRepository.save(entity);
         }catch (Exception ignored){
             // Handle exception
@@ -91,11 +99,11 @@ public class AccountServiceImpl implements AccountService {
         try{
             User user = userRepository.findByEmail(username).orElseThrow();
             List<Account> accountList = accountRepository.findAllByUserAndIsDeletedFalse(user);
-            List<AccountResponse> accountResponceList = new ArrayList<>();
+            List<AccountResponse> accountResponseList = new ArrayList<>();
             for (Account account : accountList) {
                 double totalExpenses = 0;
                 double totalIncome = 0;
-            List<Transaction> transactionList = transactionService.getTransactionsByAccount(username, account);
+            List<Transaction> transactionList = transactionService.getTransactionsByAccount(account);
             for (Transaction transaction : transactionList) {
                     if(transaction.getCategory().getType().equals("expense")){
                         totalExpenses += transaction.getAmount();
@@ -103,7 +111,7 @@ public class AccountServiceImpl implements AccountService {
                         totalIncome += transaction.getAmount();
                     }
             }
-            AccountResponse accountResponce = new AccountResponse(
+                AccountResponse accountResponse = new AccountResponse(
                     account.getAccountId(),
                     account.getName(),
                     account.getCurrentBalance(),
@@ -111,9 +119,9 @@ public class AccountServiceImpl implements AccountService {
                     totalExpenses,
                     totalIncome
             );
-            accountResponceList.add(accountResponce);
+            accountResponseList.add(accountResponse);
             }
-            return accountResponceList;
+            return accountResponseList;
         }catch(Exception e ){
             return null;
         }
@@ -122,5 +130,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account getAccountById(Integer id) {
         return accountRepository.findById(id).orElseThrow();
+    }
+
+    @Override
+    public List<Account> getAllAccounts() {
+        List<Account> accountList = accountRepository.findAll();
+        return accountList;
     }
 }

@@ -40,7 +40,7 @@ public class DebtServiceImpl implements DebtService {
         Debt debt = debtRepository.findById(debtId).get();
 
         if (!"0".equalsIgnoreCase(String.valueOf(deb.getAmount()))){
-
+            debt.setAmount(deb.getAmount());
         }if (Objects.nonNull(deb.getMoneyFrom()) && !"".equalsIgnoreCase(deb.getMoneyFrom())){
             debt.setMoneyFrom(deb.getMoneyFrom());
         }if (Objects.nonNull(deb.getStatus()) && !"".equalsIgnoreCase(deb.getStatus())){
