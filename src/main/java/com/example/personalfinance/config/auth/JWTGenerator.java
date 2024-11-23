@@ -16,7 +16,7 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JWTGenerator {
 
-	private SecretKey key = Keys.hmacShaKeyFor("trancongtien123123123123123123123213".getBytes());
+	private SecretKey key = Keys.hmacShaKeyFor("personalfinance666789789789756498789352123164".getBytes());
 
 	public String generateToken(Authentication authentication) {
 
