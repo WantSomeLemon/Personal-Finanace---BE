@@ -22,33 +22,58 @@ public class DashboardController {
     private final DashboardService dashboardService;
     private final JWTGenerator jwtGenerator;
 
+    /**
+     * Endpoint to fetch monthly data (e.g., budget overview, financial stats).
+     * @param token The JWT token from the request header.
+     * @return ResponseEntity containing a BaseResponse with the monthly data.
+     */
     @GetMapping("/monthly-data")
-    public ResponseEntity<BaseResponse> getMonthlyData(@RequestHeader(value ="Authorization") String token)
-    {
+    public ResponseEntity<BaseResponse> getMonthlyData(@RequestHeader(value ="Authorization") String token) {
+        // Extract the username from the JWT token.
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
+        // Fetch the monthly data for the user.
         List<Map<String, Object>> data = dashboardService.getMonthlyData(userName);
         return ResponseEntity.ok(new BaseResponse("success", data));
     }
 
+    /**
+     * Endpoint to fetch this month's expenses.
+     * @param token The JWT token from the request header.
+     * @return ResponseEntity containing a BaseResponse with the expenses data.
+     */
     @GetMapping("/this-month/expenses")
-    public ResponseEntity<BaseResponse> getThisMonthExpenses(@RequestHeader(value = "Authorization") String token)
-    {
+    public ResponseEntity<BaseResponse> getThisMonthExpenses(@RequestHeader(value = "Authorization") String token) {
+        // Extract the username from the JWT token.
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
+        // Fetch this month's expenses data for the user.
         List<Map<String, Object>> data = dashboardService.getThisMonthExpenses(userName);
         return ResponseEntity.ok(new BaseResponse("success", data));
     }
+
+    /**
+     * Endpoint to fetch this month's income.
+     * @param token The JWT token from the request header.
+     * @return ResponseEntity containing a BaseResponse with the income data.
+     */
     @GetMapping("/this-month/income")
-    public ResponseEntity<BaseResponse> getThisMonthIncome(@RequestHeader(value = "Authorization") String token)
-    {
+    public ResponseEntity<BaseResponse> getThisMonthIncome(@RequestHeader(value = "Authorization") String token) {
+        // Extract the username from the JWT token.
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
+        // Fetch this month's income data for the user.
         List<Map<String, Object>> data = dashboardService.getThisMonthIncome(userName);
         return ResponseEntity.ok(new BaseResponse("success", data));
     }
 
+    /**
+     * Endpoint to fetch the total income and expenses for this month.
+     * @param token The JWT token from the request header.
+     * @return ResponseEntity containing a BaseResponse with the total income and expenses data.
+     */
     @GetMapping("/this-month/total/income-and-expenses")
-    public ResponseEntity<BaseResponse> getThisMonthTotalIncomeAndExpenses(@RequestHeader(value = "Authorization") String token)
-    {
+    public ResponseEntity<BaseResponse> getThisMonthTotalIncomeAndExpenses(@RequestHeader(value = "Authorization") String token) {
+        // Extract the username from the JWT token.
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
+        // Fetch the total income and expenses for the user for this month.
         Map<String, Object> data = dashboardService.getThisMonthTotalIncomeAndExpenses(userName);
         return ResponseEntity.ok(new BaseResponse("success", data));
     }

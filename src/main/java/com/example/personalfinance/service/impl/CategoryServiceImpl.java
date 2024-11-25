@@ -32,26 +32,25 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public String addCategories(Category category, String userName) {
-        try {
+    public void addCategories(Category category, String userName) {
             User user = userRepository.findByEmail(userName).orElseThrow();
             category.setUserId(user);
             categoryRepository.save(category);
-            return "success";
-        } catch (UsernameNotFoundException e) {
-            return e.getMessage();
-        }
     }
 
     @Override
-    public String deleteCategories(int category_TD) {
-        try {
-            Category entity = categoryRepository.getById(category_TD);
+    public void updateCategories(Category category) {
+        Category cate = categoryRepository.findById(category.getCategoryId()).orElseThrow();
+        cate.setName(category.getName());
+        cate.setDescription(category.getDescription());
+        cate.setType(category.getType());
+        categoryRepository.save(cate);
+    }
+
+    @Override
+    public void deleteCategories(int categoryId) {
+            Category entity = categoryRepository.getById(categoryId);
             categoryRepository.delete(entity);
-        } catch (Exception e) {
-            return e.getMessage();
-        }
-        return "success";
     }
     @Override
     public Category getCategoryById(Integer id) {
@@ -61,7 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public ResponseEntity<BaseResponse> sortTransaction(Integer categoryId) {
         List<Transaction> transactions = transactionRepository.findByCategory(categoryId);
-        return ResponseEntity.ok(new BaseResponse("success", transactions));
+        return ResponseEntity.ok(new BaseResponse("Sort success", transactions));
     }
 
 

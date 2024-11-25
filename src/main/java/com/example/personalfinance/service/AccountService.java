@@ -8,9 +8,9 @@ import java.util.List;
 
 @Service
 public interface AccountService {
-    boolean hasAccount(String accountId);
+    boolean hasAccount(Integer accountId);
 
-    boolean hasPermission(String username, String accountId);
+    boolean hasPermission(String username, Integer accountId);
 
     void debitBalance(Account account, double amount);
 
@@ -20,7 +20,7 @@ public interface AccountService {
 
     void addAccount(Account account, String userName);
 
-    void deleteAccount(String accountId);
+    void deleteAccount(Integer accountId);
 
     List<AccountResponse> getAccountsByUsername(String username);
 

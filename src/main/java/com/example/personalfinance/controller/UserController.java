@@ -55,12 +55,6 @@ public class UserController {
         this.emailService = emailService;
     }
 
-    @GetMapping("/test")
-    public String getMethodName() {
-        return "tien";
-    }
-    
-
     @PostMapping("/auth/register")
     public ResponseEntity<BaseResponse> register(@RequestBody User user) {
         return userService.register(user);
@@ -77,7 +71,7 @@ public class UserController {
         if (jwtGenerator.validateToken(jwtGenerator.getTokenFromHeader(token))) {
             Optional<User> user = userRepository.findByEmail(jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token)));
             data.put("user", user);
-            return ResponseEntity.ok(new BaseResponse("success", data));
+            return ResponseEntity.ok(new BaseResponse("validated", data));
         }
         return new ResponseEntity<>(new BaseResponse("Session Expired", data), HttpStatus.UNAUTHORIZED);
     }
