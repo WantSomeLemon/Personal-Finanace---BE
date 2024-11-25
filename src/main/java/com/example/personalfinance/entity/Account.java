@@ -1,48 +1,41 @@
 package com.example.personalfinance.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
+import lombok.Data;
+
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.Data;
-
-@Table(name = "accounts")
-@Entity
-@Data
+@Table(name = "accounts")  // Specifies the name of the table in the database
+@Entity  // Marks this class as an entity to be mapped to a database table
+@Data  // Generates getters, setters, equals, hashcode, and toString methods
 public class Account extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id  // Specifies the primary key
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Auto-generates the primary key value
     private int accountId;
-    
-    @Column(name = "name")
+
+    @Column(name = "name")  // Maps this field to the "name" column in the table
     private String name;
-    
-    @Column(name = "current_balance")
+
+    @Column(name = "current_balance")  // Maps this field to the "current_balance" column in the table
     private double currentBalance;
-    
-    @Column(name = "payment_types")
+
+    @Column(name = "payment_types")  // Maps this field to the "payment_types" column in the table
     private String paymentTypes;
-    
-    
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+
+    @ManyToOne  // Establishes a many-to-one relationship with the User entity
+    @JoinColumn(name = "user_id")  // Specifies the foreign key column in this entity
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // Prevents this field from being serialized into JSON when retrieved
     private User user;
 
+    // Converts the paymentTypes (stored as a comma-separated string) to a List
     public List<String> getPaymentTypes() {
-        return Arrays.asList(paymentTypes.split(", "));
+        return Arrays.asList(paymentTypes.split(", "));  // Splits the string and returns as a List of Strings
     }
 
+    // Converts the List of payment types to a comma-separated string before storing it in the database
     public void setPaymentTypes(List<String> paymentTypes) {
-        this.paymentTypes = String.join(", ", paymentTypes);
+        this.paymentTypes = String.join(", ", paymentTypes);  // Joins the List elements into a comma-separated string
     }
 }

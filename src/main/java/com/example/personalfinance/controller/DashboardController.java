@@ -1,19 +1,17 @@
 package com.example.personalfinance.controller;
 
-import java.util.List;
-import java.util.Map;
-
+import com.example.personalfinance.bean.response.BaseResponse;
+import com.example.personalfinance.config.auth.JWTGenerator;
+import com.example.personalfinance.service.DashboardService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.personalfinance.bean.response.BaseResponse;
-import com.example.personalfinance.config.auth.JWTGenerator;
-import com.example.personalfinance.service.DashboardService;
-
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor

@@ -1,8 +1,9 @@
 package com.example.personalfinance.config;
 
-import java.util.Arrays;
-import java.util.Collections;
-
+import com.example.personalfinance.config.auth.JWTAuthEntryPoint;
+import com.example.personalfinance.config.auth.JWTAuthFilter;
+import com.example.personalfinance.config.auth.JWTGenerator;
+import com.example.personalfinance.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,10 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.web.cors.CorsConfiguration;
 
-import com.example.personalfinance.config.auth.JWTAuthEntryPoint;
-import com.example.personalfinance.config.auth.JWTAuthFilter;
-import com.example.personalfinance.config.auth.JWTGenerator;
-import com.example.personalfinance.service.CustomUserDetailsService;
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity

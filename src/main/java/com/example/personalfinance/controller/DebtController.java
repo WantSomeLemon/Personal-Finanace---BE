@@ -1,18 +1,15 @@
 package com.example.personalfinance.controller;
 
-import java.util.List;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.personalfinance.bean.response.BaseResponse;
 import com.example.personalfinance.config.auth.JWTGenerator;
 import com.example.personalfinance.entity.Debt;
 import com.example.personalfinance.service.DebtService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

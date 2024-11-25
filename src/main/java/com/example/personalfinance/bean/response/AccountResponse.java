@@ -1,8 +1,8 @@
 package com.example.personalfinance.bean.response;
 
-import java.util.List;
-
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * Represents a response object for account-related information.
