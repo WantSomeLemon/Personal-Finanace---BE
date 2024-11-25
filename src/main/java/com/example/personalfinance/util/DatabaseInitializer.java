@@ -21,7 +21,7 @@ public class DatabaseInitializer implements CommandLineRunner {
   private final CategoryRepository categoryRepository;
   private final AccountRepository accountRepository;
   static User savedUser;
-  
+
   public void saveUser(){
     User user = new User();
     user.setEmail("test@gmail.com");
@@ -30,7 +30,7 @@ public class DatabaseInitializer implements CommandLineRunner {
     user.setLastName("1");
     savedUser = userRepository.save(user);
   }
-  
+
   public void saveCategory(User user, String name, String type){
     Category category = new Category();
     category.setUserId(user);
@@ -38,7 +38,7 @@ public class DatabaseInitializer implements CommandLineRunner {
     category.setType(type);
     categoryRepository.save(category);
   }
-  
+
   public void saveAccount(User user, String name, List<String> paymentType){
     Account account = new Account();
     account.setUser(user);

@@ -4,12 +4,11 @@ package com.example.personalfinance.controller;
 import com.example.personalfinance.bean.response.BaseResponse;
 import com.example.personalfinance.config.auth.JWTGenerator;
 import com.example.personalfinance.entity.Category;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.personalfinance.service.CategoryService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,33 +19,78 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final JWTGenerator jwtGenerator;
 
+    /**
+     * Endpoint to fetch all categories associated with the authenticated user.
+     * @param token The JWT token from the request header.
+     * @return ResponseEntity containing a BaseResponse with a list of categories.
+     */
     @GetMapping
-    public BaseResponse getCategories(@RequestHeader(value = "Authorization", defaultValue = "") String token)
-    {
+    public ResponseEntity<BaseResponse> getCategories(@RequestHeader(value = "Authorization") String token) {
+        // Extracting the username from the JWT token.
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
+        // Retrieve the categories associated with the user.
         List<Category> categories = categoryService.getCategoriesByUserName(userName);
-        return new BaseResponse("success", categories);
+        return ResponseEntity.ok(new BaseResponse(categories));
     }
 
+    /**
+     * Endpoint to add a new category.
+     * @param token The JWT token from the request header.
+     * @param category The category data to add.
+     * @return ResponseEntity with a success or failure response.
+     */
     @PostMapping
-    public BaseResponse addCategories(@RequestHeader(value = "Authorization", defaultValue = "") String token,
-                                    @RequestBody Category category)
-    {
-        String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
-        categoryService.addCategories(category, userName);
-        return new BaseResponse(categoryService.addCategories(category, userName), null);
+    public ResponseEntity<BaseResponse> addCategories(@RequestHeader(value = "Authorization") String token,
+                                                      @RequestBody Category category) {
+        try {
+            // Extract the username from the JWT token.
+            String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
+            // Add the category for the user.
+            categoryService.addCategories(category, userName);
+            return ResponseEntity.ok().body(new BaseResponse("Add Success", category));
+        } catch (UsernameNotFoundException e) {
+            // Handle case when user is not found.
+            return ResponseEntity.badRequest().body(new BaseResponse("User Not Found"));
+        }
     }
 
-    @DeleteMapping("/{category_id}")
-    public BaseResponse deleteCourse(@PathVariable String category_id)
-    {
-        return new BaseResponse(categoryService.deleteCategories(Integer.parseInt(category_id)));
+    /**
+     * Endpoint to update an existing category.
+     * @param token The JWT token from the request header.
+     * @param category The updated category data.
+     * @return ResponseEntity with success response and updated category.
+     */
+    @PutMapping
+    public ResponseEntity<BaseResponse> updateCategories(@RequestHeader(value = "Authorization") String token,
+                                                         @RequestBody Category category) {
+        // Update the category using the provided data.
+        categoryService.updateCategories(category);
+        return ResponseEntity.ok().body(new BaseResponse("Update Success", category));
     }
 
+    /**
+     * Endpoint to delete a category by ID.
+     * @param categoryId The ID of the category to delete.
+     * @return ResponseEntity with success response and the deleted category data.
+     */
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<BaseResponse> deleteCourse(@PathVariable("categoryId") int categoryId) {
+        // Delete the category by ID.
+        categoryService.deleteCategories(categoryId);
+        return ResponseEntity.ok().body(new BaseResponse("Delete Success", categoryService.getCategoryById(categoryId)));
+    }
+
+    /**
+     * Endpoint to sort transactions within a category.
+     * @param token The JWT token from the request header.
+     * @param categorId The ID of the category to sort transactions for.
+     * @return ResponseEntity with success message.
+     */
     @GetMapping("/total-transactions/{id}")
-    public ResponseEntity<BaseResponse> sortTransaction(@RequestHeader(value = "Authorization", defaultValue = "") String token,
-                                                        @PathVariable("id") Integer categorId)
-    {
-        return categoryService.sortTransaction(categorId);
+    public ResponseEntity<BaseResponse> sortTransaction(@RequestHeader(value = "Authorization") String token,
+                                                        @PathVariable("id") Integer categorId) {
+        // Sort transactions for the given category ID.
+        categoryService.sortTransaction(categorId);
+        return ResponseEntity.ok().body(new BaseResponse("Sort Success"));
     }
 }
