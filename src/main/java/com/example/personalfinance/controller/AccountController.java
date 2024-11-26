@@ -62,7 +62,7 @@ public class AccountController {
         // Update the account using the accountId passed in the request body
         accountService.updateAccount(account, account.getAccountId());
         // Return success response with the updated account data
-        return new BaseResponse("update success", account);
+        return new BaseResponse("update success", accountService.getAccountById(account.getAccountId()));
     }
 
     /**

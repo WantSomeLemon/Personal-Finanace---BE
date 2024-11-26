@@ -65,7 +65,7 @@ public class CategoryController {
                                                          @RequestBody Category category) {
         // Update the category using the provided data.
         categoryService.updateCategories(category);
-        return ResponseEntity.ok().body(new BaseResponse("Update Success", category));
+        return ResponseEntity.ok().body(new BaseResponse("Update Success", categoryService.getCategoryById(category.getCategoryId())));
     }
 
     /**
@@ -83,14 +83,14 @@ public class CategoryController {
     /**
      * Endpoint to sort transactions within a category.
      * @param token The JWT token from the request header.
-     * @param categorId The ID of the category to sort transactions for.
+     * @param categoryId The ID of the category to sort transactions for.
      * @return ResponseEntity with success message.
      */
     @GetMapping("/total-transactions/{id}")
     public ResponseEntity<BaseResponse> sortTransaction(@RequestHeader(value = "Authorization") String token,
-                                                        @PathVariable("id") Integer categorId) {
+                                                        @PathVariable("id") Integer categoryId) {
         // Sort transactions for the given category ID.
-        categoryService.sortTransaction(categorId);
+        categoryService.sortTransaction(categoryId);
         return ResponseEntity.ok().body(new BaseResponse("Sort Success"));
     }
 }

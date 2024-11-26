@@ -71,11 +71,12 @@ public class GoalsController {
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse> deleteGoal(@PathVariable("id") Long id)
     {
+        Goals deletedGoal = goalsService.getGoal(id).orElseThrow(null);
         // Delete the goal using the service
         goalsService.deleteGoal(id);
 
         // Return a success response indicating the goal was deleted
-        return ResponseEntity.ok(new BaseResponse("success"));
+        return ResponseEntity.ok(new BaseResponse("success", deletedGoal));
     }
 
     /**

@@ -6,16 +6,12 @@ import com.example.personalfinance.repository.DebtRepository;
 import com.example.personalfinance.repository.UserRepository;
 import com.example.personalfinance.service.DebtService;
 import jakarta.transaction.Transactional;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -53,7 +49,7 @@ public class DebtServiceImpl implements DebtService {
     @Override
     public Debt debtUpdate(Debt deb, Integer debtId) {
         // Retrieve the existing debt
-        Debt debt = debtRepository.findById(debtId).get();
+        Debt debt = debtRepository.findById(debtId).orElseThrow(null);
 
         // Update debt details if they are not null or empty
         if (!"0".equalsIgnoreCase(String.valueOf(deb.getAmount()))) {
@@ -113,10 +109,11 @@ public class DebtServiceImpl implements DebtService {
                 return debtRepository.findAllByUserOrderByAmountDesc(user); // Sort by amount in descending order
             } else if (value == 2) {
                 // Sort by due date
-                List<Debt> debts = debtRepository.findAllByUser(user);
-                return debts.stream()
-                        .sorted(Comparator.comparing(debt -> parseDueDate(debt.getDueDate())))
-                        .collect(Collectors.toList());
+                List<Debt> debts = debtRepository.findAllByUserOrderByDueDateAsc(user); // Sort by date in ascending order
+                //Change from ascending to descending 
+//                Collections.reverse(debts);
+                return debts;
+
             }
 
             return debtRepository.findAllByUser(user); // Default: return debts without sorting
