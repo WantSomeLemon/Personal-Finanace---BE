@@ -11,6 +11,7 @@ import com.example.personalfinance.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,12 +34,19 @@ public class BudgetServiceImpl implements BudgetService {
         return results.stream().map(result -> {
             Budget budget = new Budget();
             // Set the budget properties using the result array
-            budget.setId((Long) result[0]);
-            budget.setAmount((Double) result[1]);
-            budget.setCategory(categoryService.getCategoryById((Integer) result[2])); // Set the associated category
-            budget.setUser(user); // Set the associated user
-            budget.setUsed((Double) result[3]);
-            budget.setBalance((Double) result[4]);
+            budget.setId(((Number) result[0]).longValue()); // Safely cast to Long
+            budget.setAmount(((Number) result[1]).doubleValue()); // Safely cast to Double
+            budget.setCategory(categoryService.getCategoryById(((Number) result[2]).intValue())); // Fetch the Category by ID
+            budget.setUsed(((Number) result[3]).doubleValue()); // Safely cast to Double
+            budget.setBalance(((Number) result[4]).doubleValue()); // Safely cast to Double
+
+            // Map createdAt and updatedAt timestamps
+            budget.setCreatedAt(((Timestamp) result[5]).toLocalDateTime()); // Convert Timestamp to LocalDateTime
+            budget.setUpdatedAt(((Timestamp) result[6]).toLocalDateTime()); // Convert Timestamp to LocalDateTime
+
+            // Set the associated User
+            budget.setUser(user);
+
             return budget;
         }).toList(); // Collect and return the list of Budget objects
     }
