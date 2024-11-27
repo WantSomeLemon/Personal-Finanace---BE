@@ -32,6 +32,8 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
             b.category_id AS categoryId, 
             b.budget_status AS budgetStatus, 
             b.budget_balance AS budgetBalance,
+            b.created_at AS createdAt,
+            b.updated_at AS updatedAt,
             (b.amount - 
              COALESCE((SELECT SUM(t.amount) 
                        FROM transactions t 
