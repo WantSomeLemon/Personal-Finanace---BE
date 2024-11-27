@@ -1,4 +1,4 @@
-package com.example.personalfinance.service.impl;
+/*package com.example.personalfinance.service.impl;
 
 import com.example.personalfinance.entity.Debt;
 import com.example.personalfinance.entity.User;
@@ -24,132 +24,198 @@ import java.util.stream.Collectors;
 public class DebtServiceImpl implements DebtService {
     private final DebtRepository debtRepository;
     private final UserRepository userRepository;
-    /**
-     * Creates a new debt entry for the given user.
-     *
-     * @param deb The debt object containing the details to be saved.
-     * @param uName The email of the user for whom the debt is created.
-     * @return The created Debt entity.
-     */
     @Override
     public Debt debtCreate(Debt deb, String uName) {
         try {
-            // Retrieve user by email and associate with the debt
             User user = userRepository.findByEmail(uName).orElseThrow();
             deb.setUser(user);
         } catch (Exception ignored) {
-            // In case user is not found, no action is performed (user-related exception ignored)
+
         }
-        return debtRepository.save(deb); // Save the debt and return the saved entity
+        return debtRepository.save(deb);
     }
 
-    /**
-     * Updates an existing debt entry.
-     *
-     * @param deb The debt object containing updated details.
-     * @param debtId The ID of the debt to update.
-     * @return The updated Debt entity.
-     */
     @Override
     public Debt debtUpdate(Debt deb, Integer debtId) {
-        // Retrieve the existing debt
         Debt debt = debtRepository.findById(debtId).get();
 
-        // Update debt details if they are not null or empty
-        if (!"0".equalsIgnoreCase(String.valueOf(deb.getAmount()))) {
+        if (!"0".equalsIgnoreCase(String.valueOf(deb.getAmount()))){
             debt.setAmount(deb.getAmount());
-        }
-        if (Objects.nonNull(deb.getMoneyFrom()) && !"".equalsIgnoreCase(deb.getMoneyFrom())) {
+        }if (Objects.nonNull(deb.getMoneyFrom()) && !"".equalsIgnoreCase(deb.getMoneyFrom())){
             debt.setMoneyFrom(deb.getMoneyFrom());
-        }
-        if (Objects.nonNull(deb.getStatus()) && !"".equalsIgnoreCase(deb.getStatus())) {
+        }if (Objects.nonNull(deb.getStatus()) && !"".equalsIgnoreCase(deb.getStatus())){
             debt.setStatus(deb.getStatus());
-        }
-        if (Objects.nonNull(deb.getDueDate()) && !"".equalsIgnoreCase(deb.getDueDate())) {
+        }if (Objects.nonNull(deb.getDueDate()) && !"".equalsIgnoreCase(deb.getDueDate())){
             debt.setDueDate(deb.getDueDate());
         }
-
-        return debtRepository.save(debt); // Save and return the updated debt entity
+        return debtRepository.save(debt);
     }
 
-    /**
-     * Retrieves a debt by its ID.
-     *
-     * @param dId The ID of the debt.
-     * @return The Debt entity corresponding to the given ID.
-     */
     @Override
     public Debt debGetId(Integer dId) {
-        return debtRepository.findById(dId).get(); // Fetch the debt by ID
+        return debtRepository.findById(dId).get();
     }
 
-    /**
-     * Deletes a debt entry by its ID.
-     *
-     * @param dId The ID of the debt to delete.
-     * @return A string message indicating that the debt was deleted.
-     */
     @Override
     public String debtDelete(Integer dId) {
-        debtRepository.deleteById(dId); // Delete the debt by ID
-        return "Deleted"; // Return a message confirming the deletion
+        debtRepository.deleteById(dId);
+        return "Deleted";
     }
 
-    /**
-     * Retrieves a list of debts for a user with optional sorting based on the provided value.
-     *
-     * @param uName The email of the user whose debts are to be fetched.
-     * @param value A value used to determine the sorting method (1 for descending by amount, 2 for sorting by due date).
-     * @return A list of Debt entities.
-     */
     @Override
     public List<Debt> debGet(String uName, Integer value) {
         try {
-            // Retrieve user by email
             User user = userRepository.findByEmail(uName).orElseThrow();
-
-            // Sort debts based on the value
             if (value == 1) {
-                return debtRepository.findAllByUserOrderByAmountDesc(user); // Sort by amount in descending order
+                return debtRepository.findAllByUserOrderByAmountDesc(user);
+            }else if (value == 2) {
+                List<Debt> debts = debtRepository.findAllByUser(user);
+                return debts.stream()
+                        .sorted(Comparator.comparing(debt -> parseDueDate(debt.getDueDate())))
+                        .collect(Collectors.toList());
+            }
+            return debtRepository.findAllByUser(user);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<Debt> getAllDebts() {
+        return debtRepository.findAll();
+    }
+
+    @Override
+    public Date parseDueDate(String dueDate) {
+       try {
+           SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+           return formatter.parse(dueDate);
+       }catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+       }
+    }
+
+}
+
+ */
+
+package com.example.personalfinance.service.impl;
+
+import com.example.personalfinance.entity.Debt;
+import com.example.personalfinance.entity.User;
+import com.example.personalfinance.repository.DebtRepository;
+import com.example.personalfinance.repository.UserRepository;
+import com.example.personalfinance.service.DebtService;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@Transactional
+@Service
+@RequiredArgsConstructor
+public class DebtServiceImpl implements DebtService {
+    private final DebtRepository debtRepository;
+    private final UserRepository userRepository;
+
+    // Tạo mới một khoản nợ
+    @Override
+    public Debt debtCreate(Debt deb, String uName) {
+        try {
+            User user = userRepository.findByEmail(uName).orElseThrow(() -> new RuntimeException("User not found"));
+            deb.setUser(user); // Gán người dùng cho khoản nợ
+        } catch (Exception ignored) {
+            // Nếu có lỗi khi tìm người dùng, có thể xử lý theo cách khác
+        }
+        return debtRepository.save(deb); // Lưu khoản nợ vào cơ sở dữ liệu
+    }
+
+    // Cập nhật thông tin khoản nợ
+    @Override
+    public Debt debtUpdate(Debt deb, Integer debtId) {
+        Debt debt = debtRepository.findById(debtId).orElseThrow(() -> new RuntimeException("Debt not found"));
+
+        // Cập nhật các trường thông tin của khoản nợ nếu có giá trị mới
+        if (!"0".equalsIgnoreCase(String.valueOf(deb.getAmount()))){
+            debt.setAmount(deb.getAmount());
+        }
+        if (Objects.nonNull(deb.getMoneyFrom()) && !"".equalsIgnoreCase(deb.getMoneyFrom())){
+            debt.setMoneyFrom(deb.getMoneyFrom());
+        }
+        if (Objects.nonNull(deb.getStatus()) && !"".equalsIgnoreCase(deb.getStatus())){
+            debt.setStatus(deb.getStatus());
+        }
+        if (Objects.nonNull(deb.getDueDate()) && !"".equalsIgnoreCase(deb.getDueDate())){
+            debt.setDueDate(deb.getDueDate());
+        }
+        return debtRepository.save(debt);
+    }
+
+    // Lấy thông tin khoản nợ theo ID
+    @Override
+    public Debt debGetId(Integer dId) {
+        return debtRepository.findById(dId).orElseThrow(() -> new RuntimeException("Debt not found"));
+    }
+
+    // Xóa một khoản nợ theo ID
+    @Override
+    public String debtDelete(Integer dId) {
+        debtRepository.deleteById(dId);
+        return "Deleted";
+    }
+
+    // Lấy danh sách các khoản nợ của người dùng theo yêu cầu (sắp xếp theo số tiền hoặc theo ngày đáo hạn)
+    @Override
+    public List<Debt> debGet(String uName, Integer value) {
+        try {
+            // Lấy người dùng hiện tại từ email (uName)
+            User user = userRepository.findByEmail(uName).orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Dựa trên giá trị 'value' sẽ sắp xếp các khoản nợ
+            if (value == 1) {
+                // Sắp xếp theo số tiền giảm dần
+                return debtRepository.findAllByUserOrderByAmountDesc(user);
             } else if (value == 2) {
-                // Sort by due date
+                // Sắp xếp theo ngày đáo hạn
                 List<Debt> debts = debtRepository.findAllByUser(user);
                 return debts.stream()
                         .sorted(Comparator.comparing(debt -> parseDueDate(debt.getDueDate())))
                         .collect(Collectors.toList());
             }
 
-            return debtRepository.findAllByUser(user); // Default: return debts without sorting
+            // Trả về tất cả các khoản nợ của người dùng nếu không có yêu cầu đặc biệt
+            return debtRepository.findAllByUser(user);
         } catch (Exception e) {
-            return null; // In case of an exception, return null (could be improved to handle specific exceptions)
+            // Xử lý lỗi và trả về null nếu có vấn đề
+            e.printStackTrace();
+            return null;
         }
     }
 
-    /**
-     * Retrieves all debts from the system.
-     *
-     * @return A list of all debts.
-     */
+    // Lấy tất cả các khoản nợ (dành cho quản trị viên hoặc các trường hợp khác)
     @Override
     public List<Debt> getAllDebts() {
-        return debtRepository.findAll(); // Return all debts from the repository
+        return debtRepository.findAll();
     }
 
-    /**
-     * Parses the due date string and converts it to a Date object.
-     *
-     * @param dueDate The due date as a string in "dd/MM/yyyy" format.
-     * @return The parsed Date object, or null if parsing fails.
-     */
+    // Phân tích ngày đáo hạn từ chuỗi String (dd/MM/yyyy)
     @Override
     public Date parseDueDate(String dueDate) {
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            return formatter.parse(dueDate); // Parse and return the date
+            return formatter.parse(dueDate); // Chuyển đổi từ chuỗi thành đối tượng Date
         } catch (ParseException e) {
-            e.printStackTrace(); // Print the stack trace in case of a parse exception
-            return null; // Return null if the parsing fails
+            e.printStackTrace();
+            return null;
         }
     }
-
 }
+

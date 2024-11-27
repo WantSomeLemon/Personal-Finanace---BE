@@ -1,9 +1,8 @@
 package com.example.personalfinance.config;
 
-import com.example.personalfinance.config.auth.JWTAuthEntryPoint;
-import com.example.personalfinance.config.auth.JWTAuthFilter;
-import com.example.personalfinance.config.auth.JWTGenerator;
-import com.example.personalfinance.service.CustomUserDetailsService;
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,8 +18,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.web.cors.CorsConfiguration;
 
-import java.util.Arrays;
-import java.util.Collections;
+import com.example.personalfinance.config.auth.JWTAuthEntryPoint;
+import com.example.personalfinance.config.auth.JWTAuthFilter;
+import com.example.personalfinance.config.auth.JWTGenerator;
+import com.example.personalfinance.service.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
@@ -34,88 +35,66 @@ public class SecurityConfig {
 
     // Constructor for initializing dependencies
     public SecurityConfig(CustomUserDetailsService userDetailsService,
-                          JWTAuthEntryPoint authEntryPoint,
-                          LogoutHandler logoutHandler,
-                          JWTGenerator jwtGenerator) {
+            JWTAuthEntryPoint authEntryPoint,
+            LogoutHandler logoutHandler,
+            JWTGenerator jwtGenerator) {
         this.userDetailsService = userDetailsService;
         this.authEntryPoint = authEntryPoint;
         this.logoutHandler = logoutHandler;
         this.jwtGenerator = jwtGenerator;
     }
 
-    /**
-     * Configures HTTP security for the application.
-     * - Stateless session management (no server-side session storage).
-     * - Defines custom exception handling for unauthorized access.
-     * - Configures CORS with allowed origins, methods, and headers.
-     * - Sets up JWT authentication filter and CSRF protection.
-     *
-     * @param http the HttpSecurity object
-     * @return the configured SecurityFilterChain
-     */
+    // Configures HTTP security for the application
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session
+        return http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(
-                        exception -> exception.authenticationEntryPoint(authEntryPoint).accessDeniedPage("/403")) // Custom entry point for unauthenticated access
+                        exception -> exception.authenticationEntryPoint(authEntryPoint).accessDeniedPage("/403"))
                 .authorizeHttpRequests(Authorize -> Authorize
-                        .requestMatchers("/**", "oauth2/**", "/api/auth/**").permitAll() // Allow all requests to certain endpoints
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs").permitAll() // Allow Swagger UI and docs
-                        .requestMatchers("/api/**").permitAll() // Allow all requests to /api endpoints
-                        .anyRequest().permitAll()) // Permit other requests
-                .csrf(c -> c.disable()) // Disable CSRF for stateless authentication
-                .cors(cors -> cors.configurationSource(request -> { // Configure CORS settings
+                        .requestMatchers("/**", "oauth2/**", "/api/auth/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs").permitAll()
+                        .requestMatchers("/api/**").permitAll()
+                        .anyRequest().permitAll())
+                .csrf(c -> c.disable())
+                .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowCredentials(true); // Allow credentials
-                    corsConfiguration.setAllowedOriginPatterns(Collections.singletonList("*")); // Allow all origins
-                    corsConfiguration.setAllowedMethods(Collections.singletonList("*")); // Allow all HTTP methods
+                    corsConfiguration.setAllowCredentials(true);
+                    corsConfiguration.setAllowedOriginPatterns(Collections.singletonList("*"));
+                    corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
                     corsConfiguration.setAllowedHeaders(
-                            Arrays.asList("Origin", "Content-Type", "Accept", "responseType", "Authorization")); // Allow specific headers
+                            Arrays.asList("Origin", "Content-Type", "Accept", "responseType", "Authorization"));
 
                     corsConfiguration.setAllowCredentials(true);
-                    corsConfiguration.setMaxAge(3600L); // Max age for pre-flight requests
+                    corsConfiguration.setMaxAge(3600L);
                     return corsConfiguration;
                 }))
-                .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(authEntryPoint)) // Custom authentication entry point
+                // Set a custom entry point for unauthenticated requests
+                .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(authEntryPoint))
 
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class) // Add JWT filter before UsernamePasswordAuthenticationFilter
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 
-                .httpBasic(Customizer.withDefaults()) // Enable basic HTTP authentication (optional)
-                .formLogin(Customizer.withDefaults()) // Enable form-based login (optional)
+                .httpBasic(Customizer.withDefaults())
+                .formLogin(Customizer.withDefaults())
 
                 .build(); // Build the security configuration
     }
 
-    /**
-     * Exposes the AuthenticationManager bean for authentication purposes.
-     *
-     * @param authenticationConfiguration configuration object for authentication
-     * @return an instance of AuthenticationManager
-     * @throws Exception if an error occurs during authentication manager initialization
-     */
+    // Exposes the AuthenticationManager bean for authentication purposes
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
-        return authenticationConfiguration.getAuthenticationManager(); // Retrieve the AuthenticationManager from the configuration
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
-    /**
-     * Defines the PasswordEncoder bean using BCrypt hashing for secure password storage.
-     *
-     * @return a BCryptPasswordEncoder instance
-     */
+    // Defines the PasswordEncoder bean using BCrypt hashing for secure password
+    // storage
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Use BCrypt for encoding passwords
+        return new BCryptPasswordEncoder();
     }
 
-    /**
-     * Defines the JWTAuthFilter bean, responsible for processing JWT tokens.
-     *
-     * @return an instance of JWTAuthFilter
-     */
     @Bean
     public JWTAuthFilter jwtAuthenticationFilter() {
-        return new JWTAuthFilter(jwtGenerator, userDetailsService); // Create a new JWTAuthFilter with necessary dependencies
+        return new JWTAuthFilter(jwtGenerator, userDetailsService);
     }
 }
