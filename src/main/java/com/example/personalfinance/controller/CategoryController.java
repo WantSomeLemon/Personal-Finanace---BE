@@ -28,29 +28,26 @@ public class CategoryController {
     private final JWTGenerator jwtGenerator;
 
     @GetMapping
-    public ResponseEntity<BaseResponse> getAllCategories(@RequestHeader(value = "Authorization") String token)
+    public BaseResponse getCategories(@RequestHeader(value = "Authorization") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         List<Category> categories = categoryService.getCategoriesByUserName(userName);
-        return ResponseEntity.ok(new BaseResponse(categories));
+        return new BaseResponse("success", categories);
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse> addCategories(@RequestHeader(value = "Authorization") String token,
+    public BaseResponse addCategories(@RequestHeader(value = "Authorization") String token,
                                     @RequestBody Category category)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
-        String message = categoryService.addCategories(category, userName);
-//        return new BaseResponse(categoryService.addCategories(category, userName), null); //??? này là sao
-        return ResponseEntity.ok(new BaseResponse(message, categoryService.getCategoryById(category.getCategoryId())));
+        categoryService.addCategories(category, userName);
+        return new BaseResponse(categoryService.addCategories(category, userName), null);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse> deleteCourse(@PathVariable("id") String id)
+    @DeleteMapping("/{category_id}")
+    public BaseResponse deleteCourse(@PathVariable String category_id)
     {
-        Category category = categoryService.getCategoryById(Integer.parseInt(id));
-        categoryService.deleteCategories(Integer.parseInt(id));
-        return ResponseEntity.ok(new BaseResponse("Deleted Category", category));
+        return new BaseResponse(categoryService.deleteCategories(Integer.parseInt(category_id)));
     }
 
     @GetMapping("/total-transactions/{id}")

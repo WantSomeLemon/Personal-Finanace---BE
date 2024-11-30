@@ -1,20 +1,32 @@
 package com.example.personalfinance.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.personalfinance.bean.request.BudgetRequest;
 import com.example.personalfinance.bean.response.BaseResponse;
 import com.example.personalfinance.config.auth.JWTGenerator;
+import com.example.personalfinance.entity.Account;
 import com.example.personalfinance.entity.Budget;
 import com.example.personalfinance.entity.Category;
 import com.example.personalfinance.entity.User;
 import com.example.personalfinance.repository.UserRepository;
 import com.example.personalfinance.service.BudgetService;
 import com.example.personalfinance.service.CategoryService;
+
 import lombok.RequiredArgsConstructor;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,120 +37,80 @@ public class BudgetController {
     private final UserRepository userRepository;
     private final JWTGenerator jwtGenerator;
 
-    /**
-     * API Endpoint to fetch all budgets for the authenticated user.
-     *
-     * @param token Authorization token from the request header.
-     * @return ResponseEntity containing the list of budgets or an error response.
-     */
     @GetMapping
     public ResponseEntity<BaseResponse> getAllBudgets(@RequestHeader(value = "Authorization") String token) {
-        try {
-            // Extract the username from the token
-            String username = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
-            // Find the user by their email
-            User user = userRepository.findByEmail(username).orElseThrow(() -> new NoSuchElementException("User not found"));
-            // Get all budgets associated with the user
-            List<Budget> budgets = budgetService.getAllBudgetByUser(user);
-            return ResponseEntity.ok(new BaseResponse(budgets));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("User not found"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse("An unexpected error occurred"));
-        }
+        User user = userRepository.findByEmail(jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token))).orElseThrow();
+        List<Budget> budgets = budgetService.getAllBudgetByUser(user);
+        return ResponseEntity.ok(new BaseResponse("success", budgets));
     }
 
-    /**
-     * API Endpoint to fetch a specific budget by its ID.
-     *
-     * @param id Budget ID.
-     * @return ResponseEntity containing the budget or an error response.
-     */
+    //API EndPoint for fetching a particular Budget
     @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse> getBudgetById(@PathVariable("id") Long id) {
-        try {
-            // Fetch the budget by ID
-            Budget budget = budgetService.getBudgetById(id).orElseThrow(() -> new NoSuchElementException("Budget not found"));
-            return ResponseEntity.ok().body(new BaseResponse(budget));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("Budget not found"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse("An unexpected error occurred"));
+    public ResponseEntity<Budget> getBudgetById(@PathVariable("id") Long id) {
+        Budget budget = budgetService.getBudgetById(id).orElse(null);
+        if (budget == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
+//        return new ResponseEntity<>(budget, HttpStatus.OK);
+        return ResponseEntity.ok(budget);
+
     }
 
-    /**
-     * API Endpoint to create a new budget for the authenticated user.
-     *
-     * @param token Authorization token from the request header.
-     * @param budgetRequest Request body containing budget details.
-     * @return ResponseEntity containing the created budget or an error response.
-     */
+
+    //API EndPoint for creating a Budget
     @PostMapping
     public ResponseEntity<BaseResponse> createBudgets(@RequestHeader(value = "Authorization") String token,
                                                       @RequestBody BudgetRequest budgetRequest) {
-        try {
-            // Extract the username from the token
-            String username = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
-            // Check if the budget already exists for the user
-            if (!budgetService.hasAlready(username, budgetRequest.getCategoryId())) {
-                // Create a new budget
-                Budget createdBudget = budgetService.createBudget(budgetRequest, username);
-                return ResponseEntity.ok().body(new BaseResponse(createdBudget));
-            } else {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse("Budget already exists"));
-            }
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("User not found"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse("An unexpected error occurred"));
+        String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
+        if (!budgetService.hasAlready(userName, budgetRequest.getCategoryId())) {
+            Budget createdBudget = budgetService.createBudget(budgetRequest, userName);
+            return new ResponseEntity<>(new BaseResponse("success", createdBudget), HttpStatus.CREATED);
+
+        } else {
+            return ResponseEntity.ok(new BaseResponse("Already exist"));
         }
     }
 
-    /**
-     * API Endpoint to update an existing budget.
-     *
-     * @param id Budget ID.
-     * @param budgetRequest Request body containing updated budget details.
-     * @return ResponseEntity containing the updated budget or an error response.
-     */
+    //API EndPoint for Updating an existing Budget
     @PutMapping("/{id}")
     public ResponseEntity<BaseResponse> updateBudget(@PathVariable("id") Long id,
                                                      @RequestBody BudgetRequest budgetRequest) {
-        try {
-            // Fetch the existing budget
-            Budget existingBudget = budgetService.getBudgetById(id).orElseThrow(() -> new NoSuchElementException("Budget not found"));
-            // Update budget details
-            Category category = categoryService.getCategoryById(budgetRequest.getCategoryId());
-            existingBudget.setCategory(category);
-            existingBudget.setAmount(budgetRequest.getAmount());
-            Budget updatedBudget = budgetService.updateBudget(existingBudget);
-            return ResponseEntity.ok(new BaseResponse("success", updatedBudget));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse(e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse("An unexpected error occurred"));
+        Budget existingBudget = budgetService.getBudgetById(id).orElse(null);
+        if (existingBudget == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
+        Category category = categoryService.getCategoryById(budgetRequest.getCategoryId());
+        existingBudget.setCategory(category);
+        existingBudget.setAmount(budgetRequest.getAmount());
+        budgetService.updateBudget(existingBudget);
+        return ResponseEntity.ok(new BaseResponse("success"));
     }
 
-    /**
-     * API Endpoint to delete an existing budget by its ID.
-     *
-     * @param id Budget ID.
-     * @return ResponseEntity containing the result of the operation.
-     */
+    //API EndPoint for Deleting an existing Budget    
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse> deleteBudget(@PathVariable("id") Long id) {
-        try {
-            // Fetch the budget to ensure it exists
-            Budget budget = budgetService.getBudgetById(id).orElseThrow(() -> new NoSuchElementException("Budget not found"));
-            // Delete the budget
-            budgetService.deleteBudget(id);
-            return ResponseEntity.ok(new BaseResponse("success", budget));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("Budget not found"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse("An unexpected error occurred"));
+        Budget budget = budgetService.getBudgetById(id).orElse(null);
+        if (budget == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
+        budgetService.deleteBudget(id);
+        return ResponseEntity.ok(new BaseResponse("success"));
+    }
+
+    //test case
+    @GetMapping("/budget")
+    public ResponseEntity<List<Account>> getAllBudget() {
+        List<Account> accounts = new ArrayList<>();
+        List<Budget> budgets = budgetService.getAllBudgets();
+        return ResponseEntity.ok(accounts);
+    }
+
+    @GetMapping("/budget/{id}")
+    public ResponseEntity<List<Account>> getBudgetById(@PathVariable Integer id) {
+        List<Account> accounts = new ArrayList<>();
+        return ResponseEntity.ok(accounts);
     }
 }
