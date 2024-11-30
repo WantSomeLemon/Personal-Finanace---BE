@@ -64,23 +64,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void updateAccount(Account account, Integer accountId) {
+    public Account updateAccount(Account account, Integer accountId) {
         Account acc = accountRepository.findById(accountId).orElseThrow();
         acc.setCurrentBalance(account.getCurrentBalance());
         acc.setName(account.getName());
         acc.setPaymentTypes(account.getPaymentTypes());
-        accountRepository.save(acc);
+        return accountRepository.save(acc);
     }
 
     @Override
-    public void addAccount(Account account, String userName) {
-        try{
+    public Account addAccount(Account account, String userName) {
             User user = userRepository.findByEmail(userName).orElseThrow();
             account.setUser(user);
-            accountRepository.save(account);
-        }catch(Exception ignored){
-
-        }
+            return accountRepository.save(account);
     }
 
     @Override

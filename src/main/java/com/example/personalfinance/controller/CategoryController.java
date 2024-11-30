@@ -28,26 +28,29 @@ public class CategoryController {
     private final JWTGenerator jwtGenerator;
 
     @GetMapping
-    public BaseResponse getCategories(@RequestHeader(value = "Authorization") String token)
+    public ResponseEntity<BaseResponse> getAllCategories(@RequestHeader(value = "Authorization") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         List<Category> categories = categoryService.getCategoriesByUserName(userName);
-        return new BaseResponse("success", categories);
+        return ResponseEntity.ok(new BaseResponse(categories));
     }
 
     @PostMapping
-    public BaseResponse addCategories(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<BaseResponse> addCategories(@RequestHeader(value = "Authorization") String token,
                                     @RequestBody Category category)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
-        categoryService.addCategories(category, userName);
-        return new BaseResponse(categoryService.addCategories(category, userName), null);
+        String message = categoryService.addCategories(category, userName);
+//        return new BaseResponse(categoryService.addCategories(category, userName), null); //??? này là sao
+        return ResponseEntity.ok(new BaseResponse(message, categoryService.getCategoryById(category.getCategoryId())));
     }
 
-    @DeleteMapping("/{category_id}")
-    public BaseResponse deleteCourse(@PathVariable String category_id)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BaseResponse> deleteCourse(@PathVariable("id") String id)
     {
-        return new BaseResponse(categoryService.deleteCategories(Integer.parseInt(category_id)));
+        Category category = categoryService.getCategoryById(Integer.parseInt(id));
+        categoryService.deleteCategories(Integer.parseInt(id));
+        return ResponseEntity.ok(new BaseResponse("Deleted Category", category));
     }
 
     @GetMapping("/total-transactions/{id}")

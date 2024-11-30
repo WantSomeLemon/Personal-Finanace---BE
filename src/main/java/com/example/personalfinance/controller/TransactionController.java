@@ -2,6 +2,8 @@ package com.example.personalfinance.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,46 +30,46 @@ public class TransactionController {
     private final JWTGenerator jwtGenerator;
 
     @GetMapping
-    public BaseResponse getTransactions(@RequestHeader(value = "Authorization") String token)
+    public ResponseEntity<BaseResponse> getTransactions(@RequestHeader(value = "Authorization") String token)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         List<Transaction> transactions = transactionService.getTransactionsByUserName(userName);
-        return new BaseResponse("success", transactions);
+        return ResponseEntity.ok(new BaseResponse(transactions));
     }
 
     @PostMapping
-    public BaseResponse addTransactions(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<BaseResponse> addTransactions(@RequestHeader(value = "Authorization") String token,
                                         @RequestBody TransactionRequest transactionRequest)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         transactionService.addTransaction(transactionRequest, userName);
-        return new BaseResponse("success");
+        return ResponseEntity.ok(new BaseResponse("Add successful", transactionService.getTransactionsByUserName(userName)));
     }
     
     @PutMapping
-    public BaseResponse updateTransactions(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<BaseResponse> updateTransactions(@RequestHeader(value = "Authorization") String token,
                                            @RequestBody TransactionRequest transactionRequest,
                                            @RequestParam String transactionId)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         transactionService.updateTransaction(transactionRequest, Integer.valueOf(transactionId), userName);
-        return new BaseResponse("success");
+        return ResponseEntity.ok(new BaseResponse("Update successful", transactionService.getTransactionsByUserName(userName)));
     }
     
     @DeleteMapping
-    public BaseResponse deleteTransactions(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<BaseResponse> deleteTransactions(@RequestHeader(value = "Authorization") String token,
                                            @RequestParam String transactionId)
     {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         if(transactionService.hasTransaction(transactionId)){
             if(transactionService.hasPermission(userName, transactionId)){
                 transactionService.deleteTransaction(Integer.parseInt(transactionId));
-                return new BaseResponse("success");
+                return ResponseEntity.ok(new BaseResponse("Delete successful"));
             }else{
-                return new BaseResponse("couldn't delete transaction");
+                return ResponseEntity.badRequest().body(new BaseResponse("Permission denied"));
             }
         }else{
-            return new BaseResponse("transaction not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("not found"));
         }
     }
 }

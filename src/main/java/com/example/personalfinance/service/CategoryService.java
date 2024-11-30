@@ -13,7 +13,7 @@ public interface CategoryService {
 
     String addCategories(Category category, String userName);
 
-    String deleteCategories(int category_TD);
+    void deleteCategories(int category_TD);
 
     Category getCategoryById(Integer id);
 

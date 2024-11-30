@@ -56,8 +56,9 @@ public class GoalsController {
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse> deleteGoal(@PathVariable("id") Long id)
     {
+        Goals goal = goalsService.getGoal(id).orElseThrow(null);
         goalsService.deleteGoal(id);
-        return ResponseEntity.ok(new BaseResponse("success"));
+        return ResponseEntity.ok(new BaseResponse("delete success", goal));
     }
 
     //API EndPoint for fetching a particular existing Goal

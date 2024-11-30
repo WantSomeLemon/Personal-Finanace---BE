@@ -23,28 +23,4 @@ public abstract class BaseEntity {
     @Column(updatable = true)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-//    public boolean getIsDeleted() {
-//        return isDeleted;
-//    }
-//
-//    public void setIsDeleted(boolean deleted) {
-//        isDeleted = deleted;
-//    }
-//
-//    public LocalDateTime getCreatedAt() {
-//        return createdAt;
-//    }
-//
-//    public void setCreatedAt(LocalDateTime createdAt) {
-//        this.createdAt = createdAt;
-//    }
-//
-//    public LocalDateTime getUpdatedAt() {
-//        return updatedAt;
-//    }
-//
-//    public void setUpdatedAt(LocalDateTime updatedAt) {
-//        this.updatedAt = updatedAt;
-//    }
 }

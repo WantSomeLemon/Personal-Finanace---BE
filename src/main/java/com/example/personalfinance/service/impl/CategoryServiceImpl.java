@@ -21,6 +21,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
+
     @Override
     public List<Category> getCategoriesByUserName(String userName) {
         try {
@@ -44,15 +45,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public String deleteCategories(int category_TD) {
-        try {
-            Category entity = categoryRepository.getById(category_TD);
-            categoryRepository.delete(entity);
-        } catch (Exception e) {
-            return e.getMessage();
-        }
-        return "success";
+    public void deleteCategories(int id) {
+        categoryRepository.deleteById(id);
     }
+
     @Override
     public Category getCategoryById(Integer id) {
         return categoryRepository.findById(id).orElseThrow();

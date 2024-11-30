@@ -16,9 +16,9 @@ public interface AccountService {
 
     void creditBalance(Account account, double amount);
 
-    void updateAccount(Account account, Integer accountId);
+    Account updateAccount(Account account, Integer accountId);
 
-    void addAccount(Account account, String userName);
+    Account addAccount(Account account, String userName);
 
     void deleteAccount(String accountId);
 

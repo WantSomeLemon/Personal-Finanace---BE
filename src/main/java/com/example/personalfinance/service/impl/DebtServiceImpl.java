@@ -126,92 +126,86 @@ public class DebtServiceImpl implements DebtService {
     private final DebtRepository debtRepository;
     private final UserRepository userRepository;
 
-    // Tạo mới một khoản nợ
+
     @Override
     public Debt debtCreate(Debt deb, String uName) {
-        try {
-            User user = userRepository.findByEmail(uName).orElseThrow(() -> new RuntimeException("User not found"));
-            deb.setUser(user); // Gán người dùng cho khoản nợ
-        } catch (Exception ignored) {
-            // Nếu có lỗi khi tìm người dùng, có thể xử lý theo cách khác
-        }
-        return debtRepository.save(deb); // Lưu khoản nợ vào cơ sở dữ liệu
+        User user = userRepository.findByEmail(uName).orElseThrow(() -> new RuntimeException("User not found"));
+        deb.setUser(user);
+        return debtRepository.save(deb);
     }
-
-    // Cập nhật thông tin khoản nợ
+    
+    
     @Override
     public Debt debtUpdate(Debt deb, Integer debtId) {
         Debt debt = debtRepository.findById(debtId).orElseThrow(() -> new RuntimeException("Debt not found"));
 
-        // Cập nhật các trường thông tin của khoản nợ nếu có giá trị mới
-        if (!"0".equalsIgnoreCase(String.valueOf(deb.getAmount()))){
+
+        if (!"0".equalsIgnoreCase(String.valueOf(deb.getAmount()))) {
             debt.setAmount(deb.getAmount());
         }
-        if (Objects.nonNull(deb.getMoneyFrom()) && !"".equalsIgnoreCase(deb.getMoneyFrom())){
+        if (Objects.nonNull(deb.getMoneyFrom()) && !"".equalsIgnoreCase(deb.getMoneyFrom())) {
             debt.setMoneyFrom(deb.getMoneyFrom());
         }
-        if (Objects.nonNull(deb.getStatus()) && !"".equalsIgnoreCase(deb.getStatus())){
+        if (Objects.nonNull(deb.getStatus()) && !"".equalsIgnoreCase(deb.getStatus())) {
             debt.setStatus(deb.getStatus());
         }
-        if (Objects.nonNull(deb.getDueDate()) && !"".equalsIgnoreCase(deb.getDueDate())){
+        if (Objects.nonNull(deb.getDueDate()) && !"".equalsIgnoreCase(deb.getDueDate())) {
             debt.setDueDate(deb.getDueDate());
         }
         return debtRepository.save(debt);
     }
-
-    // Lấy thông tin khoản nợ theo ID
+    
+    
     @Override
     public Debt debGetId(Integer dId) {
         return debtRepository.findById(dId).orElseThrow(() -> new RuntimeException("Debt not found"));
     }
 
-    // Xóa một khoản nợ theo ID
+
     @Override
     public String debtDelete(Integer dId) {
         debtRepository.deleteById(dId);
-        return "Deleted";
+        return "Delete debt successfully";
     }
 
-    // Lấy danh sách các khoản nợ của người dùng theo yêu cầu (sắp xếp theo số tiền hoặc theo ngày đáo hạn)
+
     @Override
     public List<Debt> debGet(String uName, Integer value) {
         try {
-            // Lấy người dùng hiện tại từ email (uName)
+
             User user = userRepository.findByEmail(uName).orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Dựa trên giá trị 'value' sẽ sắp xếp các khoản nợ
+
             if (value == 1) {
-                // Sắp xếp theo số tiền giảm dần
                 return debtRepository.findAllByUserOrderByAmountDesc(user);
             } else if (value == 2) {
-                // Sắp xếp theo ngày đáo hạn
                 List<Debt> debts = debtRepository.findAllByUser(user);
                 return debts.stream()
                         .sorted(Comparator.comparing(debt -> parseDueDate(debt.getDueDate())))
                         .collect(Collectors.toList());
             }
 
-            // Trả về tất cả các khoản nợ của người dùng nếu không có yêu cầu đặc biệt
+
             return debtRepository.findAllByUser(user);
         } catch (Exception e) {
-            // Xử lý lỗi và trả về null nếu có vấn đề
+
             e.printStackTrace();
             return null;
         }
     }
 
-    // Lấy tất cả các khoản nợ (dành cho quản trị viên hoặc các trường hợp khác)
+
     @Override
     public List<Debt> getAllDebts() {
         return debtRepository.findAll();
     }
 
-    // Phân tích ngày đáo hạn từ chuỗi String (dd/MM/yyyy)
+
     @Override
     public Date parseDueDate(String dueDate) {
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            return formatter.parse(dueDate); // Chuyển đổi từ chuỗi thành đối tượng Date
+            return formatter.parse(dueDate); 
         } catch (ParseException e) {
             e.printStackTrace();
             return null;
