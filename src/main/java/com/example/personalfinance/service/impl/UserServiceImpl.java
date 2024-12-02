@@ -73,12 +73,12 @@ public class UserServiceImpl implements UserService {
         String senderName = "Personal Finance Team";
         String subject = "Personal Finance Team account security code";
         String content = "<div>\n" +
-                        "    <span style=\"color:#808080;padding: 2px;font-family: sans-serif;\">Paymint Account</span><br>\n" +
+                        "    <span style=\"color:#808080;padding: 2px;font-family: sans-serif;\">Personal Finance Account</span><br>\n" +
                         "    <span style=\"color:#5C6AC4;padding: 2px;font-size:32px;font-family: sans-serif;\"><b>Security code</b></span><br><br>\n" +
-                        "    <span style=\"font-family: sans-serif;\">Please use the following security code for the Paymint account.</span><br><br><br>\n" +
+                        "    <span style=\"font-family: sans-serif;\">Please use the following security code for the Personal Finance account.</span><br><br><br>\n" +
                         "    <span style=\"font-family: sans-serif;\">Security code: <b>[[CODE]]</b></span><br><br><br>\n" +
                         "    <span style=\"font-family: sans-serif;\">Thanks,</span><br>\n" +
-                        "    <span style=\"font-family: sans-serif;\">The Paymint Team</span>\n" +
+                        "    <span style=\"font-family: sans-serif;\">The Personal Finance Team</span>\n" +
                         "</div>";
 
     }
