@@ -65,7 +65,7 @@ public class BudgetController {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
         if (!budgetService.hasAlready(userName, budgetRequest.getCategoryId())) {
             Budget createdBudget = budgetService.createBudget(budgetRequest, userName);
-            return new ResponseEntity<>(new BaseResponse("success", createdBudget), HttpStatus.CREATED);
+            return ResponseEntity.ok().body(new BaseResponse("Create success" ,createdBudget));
 
         } else {
             return ResponseEntity.ok(new BaseResponse("Already exist"));
@@ -85,7 +85,7 @@ public class BudgetController {
         existingBudget.setCategory(category);
         existingBudget.setAmount(budgetRequest.getAmount());
         budgetService.updateBudget(existingBudget);
-        return ResponseEntity.ok(new BaseResponse("success"));
+        return ResponseEntity.ok(new BaseResponse("update success", existingBudget));
     }
 
     //API EndPoint for Deleting an existing Budget    
@@ -93,24 +93,10 @@ public class BudgetController {
     public ResponseEntity<BaseResponse> deleteBudget(@PathVariable("id") Long id) {
         Budget budget = budgetService.getBudgetById(id).orElse(null);
         if (budget == null) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             return ResponseEntity.notFound().build();
         }
         budgetService.deleteBudget(id);
         return ResponseEntity.ok(new BaseResponse("success"));
     }
-
-    //test case
-    @GetMapping("/budget")
-    public ResponseEntity<List<Account>> getAllBudget() {
-        List<Account> accounts = new ArrayList<>();
-        List<Budget> budgets = budgetService.getAllBudgets();
-        return ResponseEntity.ok(accounts);
-    }
-
-    @GetMapping("/budget/{id}")
-    public ResponseEntity<List<Account>> getBudgetById(@PathVariable Integer id) {
-        List<Account> accounts = new ArrayList<>();
-        return ResponseEntity.ok(accounts);
-    }
+    
 }

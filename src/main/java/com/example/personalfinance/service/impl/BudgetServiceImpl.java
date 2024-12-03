@@ -1,5 +1,6 @@
 package com.example.personalfinance.service.impl;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,16 +33,7 @@ public class BudgetServiceImpl implements BudgetService {
     public List<Budget> getAllBudgetByUser(User user) {
         List<Object[]> results = budgetRepository.findAllByUser(user.getUserId());
 
-        return results.stream().map(result -> {
-            Budget budget = new Budget();
-            budget.setId((Long) result[0]);
-            budget.setAmount((Double) result[1]);
-            budget.setCategory(categoryService.getCategoryById((Integer) result[2]));
-            budget.setUser(user);
-            budget.setUsed( (Long) result[3]);
-            budget.setBalance((Long) result[4]);
-            return budget;
-        }).toList();
+        return mapResultsToBudgets(results, user);
     }
 
     @Override
@@ -71,23 +63,30 @@ public class BudgetServiceImpl implements BudgetService {
         User user = userRepository.findByEmail(userName).orElseThrow();
         List<Object[]> results = budgetRepository.findAllByUser(user.getUserId());
 
-        List<Budget> budgetList = results.stream().map(result -> {
-            Budget budget = new Budget();
+        List<Budget> budgetList = mapResultsToBudgets(results, user);
+        
+        return budgetList.stream().anyMatch(b -> b.getCategory().getCategoryId() == categoryId);
+    }
 
-            budget.setAmount((Double) result[1]);
-            budget.setCategory(categoryService.getCategoryById((Integer) result[2]));
+
+    private List<Budget> mapResultsToBudgets(List<Object[]> results, User user) {
+        return results.stream().map(result -> {
+            Budget budget = new Budget();
+            // Set the budget properties using the result array
+            budget.setId(((Number) result[0]).longValue()); // Safely cast to Long
+            budget.setAmount(((Number) result[1]).doubleValue()); // Safely cast to Double
+            budget.setCategory(categoryService.getCategoryById(((Number) result[2]).intValue())); // Fetch the Category by ID
+            budget.setUsed(((Number) result[3]).doubleValue()); // Safely cast to Double
+            budget.setBalance(((Number) result[4]).doubleValue()); // Safely cast to Double
+
+            // Map createdAt and updatedAt timestamps
+            budget.setCreatedAt(((Timestamp) result[5]).toLocalDateTime()); // Convert Timestamp to LocalDateTime
+            budget.setUpdatedAt(((Timestamp) result[6]).toLocalDateTime()); // Convert Timestamp to LocalDateTime
+
+            // Set the associated User
             budget.setUser(user);
-            budget.setUsed(Integer.toUnsignedLong((Integer) result[3]));
-            budget.setBalance((Long) result[4]);
+
             return budget;
-        }).toList();
-        boolean isAlready = false;
-        for (Budget b : budgetList) {
-            if (b.getCategory().getCategoryId() == categoryId) {
-                isAlready = true;
-                break;
-            }
-        }
-        return isAlready;
+        }).toList(); // Collect and return the list of Budget objects
     }
 }

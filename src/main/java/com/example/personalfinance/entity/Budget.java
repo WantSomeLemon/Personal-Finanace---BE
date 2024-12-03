@@ -21,10 +21,10 @@ public class Budget extends BaseEntity {
     private Long id;
 
     @Column(name = "budget_status")
-    private Long used;
+    private double used = 0.0;
 
     @Column(name = "budget_balance")
-    private Long balance;
+    private double balance = 0.0;
 
 
     @ManyToOne
