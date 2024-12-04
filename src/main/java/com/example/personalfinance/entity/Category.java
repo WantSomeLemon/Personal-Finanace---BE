@@ -20,13 +20,13 @@ public class Category extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int categoryId;
 
-    @Column(name = "category_name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "category_type")
+    @Column(name = "type")
     private String type;
 
-    @Column(name = "category_description")
+    @Column(name = "description")
     private String description;
 
     @ManyToOne
