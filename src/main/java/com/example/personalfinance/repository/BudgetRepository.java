@@ -18,8 +18,8 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
             b.id AS id, 
             b.amount AS amount, 
             b.category_id AS categoryId, 
-            b.budget_status AS budgetStatus, 
-            b.budget_balance AS budgetBalance,
+            b.used AS budgetUsed, 
+            b.balance AS budgetBalance,
             b.created_at AS createdAt,
             b.updated_at AS updatedAt,
             (b.amount - 

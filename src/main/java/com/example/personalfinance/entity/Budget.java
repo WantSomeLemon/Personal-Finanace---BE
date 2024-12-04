@@ -20,17 +20,19 @@ public class Budget extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "budget_status")
+    @Column(name = "used")
     private double used = 0.0;
 
-    @Column(name = "budget_balance")
+    @Column(name = "balance")
     private double balance = 0.0;
-
-
+    
+    @Column(name = "amount")
+    private double amount;
+    
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    private double amount;
+    
 
     @ManyToOne
     @JoinColumn(name = "user_id")
