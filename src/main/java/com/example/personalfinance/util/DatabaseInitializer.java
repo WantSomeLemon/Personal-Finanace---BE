@@ -20,56 +20,41 @@ public class DatabaseInitializer implements CommandLineRunner {
   private final PasswordEncoder passwordEncoder;
   private final CategoryRepository categoryRepository;
   private final AccountRepository accountRepository;
+  
   static User savedUser;
-  
-  public void saveUser(){
+
+
+  private User createUser(String email, String rawPassword, String firstName, String lastName) {
     User user = new User();
-    user.setEmail("test@gmail.com");
-    user.setPassword(passwordEncoder.encode("123"));
-    user.setFirstName("Test-Account");
-    user.setLastName("1");
-    savedUser = userRepository.save(user);
+    user.setEmail(email);
+    user.setPassword(passwordEncoder.encode(rawPassword));
+    user.setFirstName(firstName);
+    user.setLastName(lastName);
+    return user;
+  }
+
+  public void saveUser() {
+    List<User> users = List.of(
+            createUser("user1@gmail.com", "password1", "User", "One"),
+            createUser("user2@gmail.com", "password2", "User", "Two"),
+            createUser("user3@gmail.com", "password3", "User", "Three"),
+            createUser("user4@gmail.com", "password4", "User", "Four"),
+            createUser("user5@gmail.com", "password5", "User", "Five")
+    );
+
+    userRepository.saveAll(users);
   }
   
-  public void saveCategory(User user, String name, String type){
-    Category category = new Category();
-    category.setUserId(user);
-    category.setName(name);
-    category.setType(type);
-    categoryRepository.save(category);
-  }
-  
-  public void saveAccount(User user, String name, List<String> paymentType){
-    Account account = new Account();
-    account.setUser(user);
-    account.setName(name);
-    account.setPaymentTypes(paymentType);
-    account.setCurrentBalance(5000);
-    accountRepository.save(account);
-  }
 
   @Override
   public void run(String... args) throws Exception {
-    if(!userRepository.existsByEmail("test@gmail.com")){
+    if(!userRepository.existsByEmail("user1@gmail.com")
+            && !userRepository.existsByEmail("user2@gmail.com")
+            && !userRepository.existsByEmail("user3@gmail.com")
+            && !userRepository.existsByEmail("user4@gmail.com")
+            && !userRepository.existsByEmail("user5@gmail.com")
+    ){
       saveUser();
-      if(savedUser != null){
-        //Expenses Category
-        saveCategory(savedUser,"Food","expense");
-        saveCategory(savedUser,"Groceries","expense");
-        saveCategory(savedUser,"Rent","expense");
-        saveCategory(savedUser,"Utilities","expense");
-        saveCategory(savedUser,"Debt Payments","expense");
-
-        //Income Category
-        saveCategory(savedUser,"Salary","income");
-        saveCategory(savedUser,"Investment Income","income");
-        saveCategory(savedUser,"Freelance ","income");
-        saveCategory(savedUser,"Commission and Bonuses","income");
-        saveCategory(savedUser,"Annuities ","income");
-
-        //Account Create
-        saveAccount(savedUser,"Cash", List.of("other"));
-      }
     }
   }
 }
