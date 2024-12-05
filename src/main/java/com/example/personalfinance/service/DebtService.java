@@ -14,7 +14,7 @@ public interface DebtService {
     Debt debtUpdate(Debt deb, Integer debtId);
     Debt debGetId(Integer dId);
     String debtDelete(Integer dId);
-    List<Debt> debGet(String uName, Integer value);
+    List<Debt> debGet(String uName);
     List<Debt> getAllDebts();
     Date parseDueDate(String dueDate);
 
