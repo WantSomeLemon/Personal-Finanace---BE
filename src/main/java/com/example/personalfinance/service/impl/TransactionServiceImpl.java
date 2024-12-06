@@ -1,29 +1,23 @@
 package com.example.personalfinance.service.impl;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-
 import com.example.personalfinance.bean.request.TransactionRequest;
-import com.example.personalfinance.entity.Account;
-import com.example.personalfinance.entity.Budget;
-import com.example.personalfinance.entity.Category;
-import com.example.personalfinance.entity.Transaction;
-import com.example.personalfinance.entity.User;
+import com.example.personalfinance.entity.*;
 import com.example.personalfinance.repository.BudgetRepository;
 import com.example.personalfinance.repository.TransactionRepository;
 import com.example.personalfinance.repository.UserRepository;
 import com.example.personalfinance.service.AccountService;
 import com.example.personalfinance.service.CategoryService;
 import com.example.personalfinance.service.TransactionService;
-
 import lombok.RequiredArgsConstructor;
- 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
@@ -60,7 +54,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void addTransaction(TransactionRequest transactionRequest, String userName) {
+    public Transaction addTransaction(TransactionRequest transactionRequest, String userName) {
         Account account = accountService.getAccountById(transactionRequest.getAccountId());
         Category category = categoryService.getCategoryById(transactionRequest.getCategoryId());
         User user = userRepository.findByEmail(userName).orElseThrow();
@@ -72,41 +66,34 @@ public class TransactionServiceImpl implements TransactionService {
                 category,
                 account,
                 user);
-        transactionRepository.save(transaction);
         updateBudget(transaction);
         if (category.getType().equals("expense")) {
             accountService.debitBalance(account, transactionRequest.getAmount());
         } else if (category.getType().equals("income")) {
             accountService.creditBalance(account, transactionRequest.getAmount());
         }
+        return transactionRepository.save(transaction);
     }
 
     @Override
-    public void updateTransaction(TransactionRequest transactionRequest, Integer transactionId, String userName) {
-        try {
-            Transaction entity = transactionRepository.findById(transactionId).orElseThrow();
-            Account account = accountService.getAccountById(transactionRequest.getAccountId());
-            Category category = categoryService.getCategoryById(transactionRequest.getCategoryId());
-            entity.setAccount(account);
-            entity.setCategory(category);
-            entity.setDateTime(transactionRequest.getDateTime());
-            entity.setPaymentType(transactionRequest.getPaymentType());
-            entity.setDescription(transactionRequest.getDescription());
-            entity.setAmount(transactionRequest.getAmount());
-            transactionRepository.save(entity);
-        } catch (Exception ignore) {
-
-        }
+    public Transaction updateTransaction(TransactionRequest transactionRequest, Integer transactionId, String userName) {
+        Transaction entity = transactionRepository.findById(transactionId).orElseThrow();
+        Account account = accountService.getAccountById(transactionRequest.getAccountId());
+        Category category = categoryService.getCategoryById(transactionRequest.getCategoryId());
+        entity.setAccount(account);
+        entity.setCategory(category);
+        entity.setDateTime(transactionRequest.getDateTime());
+        entity.setPaymentType(transactionRequest.getPaymentType());
+        entity.setDescription(transactionRequest.getDescription());
+        entity.setAmount(transactionRequest.getAmount());
+        return transactionRepository.save(entity);
     }
 
     @Override
     public void deleteTransaction(int id) {
-        try {
-            Transaction entity = transactionRepository.findById(id).orElseThrow();
-            transactionRepository.delete(entity);
-        } catch (Exception ignored) {
-
-        }
+        Transaction entity = transactionRepository.findById(id).orElseThrow(null);
+        entity.setDeleted(true);
+        transactionRepository.save(entity);
     }
 
     @Override
@@ -134,10 +121,10 @@ public class TransactionServiceImpl implements TransactionService {
     public void updateBudget(Transaction transaction) {
         Budget budget = budgetRepository.findByCategoryAndUser(transaction.getCategory(), transaction.getUser());
         if (budget != null) {
-           System.out.println("Budget is not null");
+            System.out.println("Budget is not null");
             long l = (long) transaction.getAmount();
             long amount = (long) budget.getAmount();
-            budget.setUsed(budget.getUsed()+l);
+            budget.setUsed(budget.getUsed() + l);
             budget.setBalance(amount - l);
             budgetRepository.save(budget);
         }
