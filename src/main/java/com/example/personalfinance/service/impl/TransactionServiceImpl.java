@@ -2,6 +2,11 @@ package com.example.personalfinance.service.impl;
 
 import com.example.personalfinance.bean.request.TransactionRequest;
 import com.example.personalfinance.entity.*;
+import com.example.personalfinance.exception.account.AccountNotFoundException;
+import com.example.personalfinance.exception.account.TransactionProcessingException;
+import com.example.personalfinance.exception.categories.CategoryNotFoundException;
+import com.example.personalfinance.exception.transaction.TransactionNotFoundException;
+import com.example.personalfinance.exception.user.UserNotFoundException;
 import com.example.personalfinance.repository.BudgetRepository;
 import com.example.personalfinance.repository.TransactionRepository;
 import com.example.personalfinance.repository.UserRepository;
@@ -35,99 +40,146 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<Transaction> getTransactionsByUserName(String userName) {
         try {
-            User user = userRepository.findByEmail(userName).orElseThrow();
+            User user = userRepository.findByEmail(userName).orElseThrow(() -> new UsernameNotFoundException("User not found"));
             List<Transaction> transactionList = transactionRepository.findAllByUserAndIsDeletedFalse(user);
+            if (transactionList.isEmpty()) {
+                throw new TransactionNotFoundException("No transactions found for user " + userName);
+            }
             transactionList.sort(Collections.reverseOrder());
             return transactionList;
         } catch (UsernameNotFoundException e) {
-            return null;
+            throw new UserNotFoundException("User not found: " + userName);
+        } catch (TransactionNotFoundException e) {
+            throw e; // rethrow TransactionNotFoundException to be handled in the GlobalExceptionHandler
         }
     }
 
     @Override
     public List<Transaction> getTransactionsByAccount(Account account) {
         try {
+            if (account == null) {
+                throw new AccountNotFoundException("Account not found");
+            }
             return transactionRepository.findAllByAccount(account);
-        } catch (UsernameNotFoundException e) {
-            return null;
+        } catch (AccountNotFoundException e) {
+            throw e; // rethrow AccountNotFoundException to be handled by GlobalExceptionHandler
         }
     }
 
     @Override
     public Transaction addTransaction(TransactionRequest transactionRequest, String userName) {
-        Account account = accountService.getAccountById(transactionRequest.getAccountId());
-        Category category = categoryService.getCategoryById(transactionRequest.getCategoryId());
-        User user = userRepository.findByEmail(userName).orElseThrow();
-        Transaction transaction = new Transaction(
-                transactionRequest.getAmount(),
-                transactionRequest.getDescription(),
-                transactionRequest.getPaymentType(),
-                transactionRequest.getDateTime(),
-                category,
-                account,
-                user);
-        updateBudget(transaction);
-        if (category.getType().equals("expense")) {
-            accountService.debitBalance(account, transactionRequest.getAmount());
-        } else if (category.getType().equals("income")) {
-            accountService.creditBalance(account, transactionRequest.getAmount());
+        try {
+            Account account = accountService.getAccountById(transactionRequest.getAccountId());
+            Category category = categoryService.getCategoryById(transactionRequest.getCategoryId());
+            User user = userRepository.findByEmail(userName).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+            Transaction transaction = new Transaction(
+                    transactionRequest.getAmount(),
+                    transactionRequest.getDescription(),
+                    transactionRequest.getPaymentType(),
+                    transactionRequest.getDateTime(),
+                    category,
+                    account,
+                    user);
+            updateBudget(transaction);
+
+            if (category.getType().equals("expense")) {
+                accountService.debitBalance(account, transactionRequest.getAmount());
+            } else if (category.getType().equals("income")) {
+                accountService.creditBalance(account, transactionRequest.getAmount());
+            }
+
+            return transactionRepository.save(transaction);
+        } catch (AccountNotFoundException e) {
+            throw e; // rethrow AccountNotFoundException to be handled by GlobalExceptionHandler
+        } catch (CategoryNotFoundException e) {
+            throw e; // rethrow CategoryNotFoundException to be handled by GlobalExceptionHandler
+        } catch (UserNotFoundException e) {
+            throw e; // rethrow UserNotFoundException to be handled by GlobalExceptionHandler
+        } catch (TransactionProcessingException e) {
+            throw new TransactionProcessingException("Error processing transaction: " + e.getMessage());
         }
-        return transactionRepository.save(transaction);
     }
 
     @Override
     public Transaction updateTransaction(TransactionRequest transactionRequest, Integer transactionId, String userName) {
-        Transaction entity = transactionRepository.findById(transactionId).orElseThrow();
-        Account account = accountService.getAccountById(transactionRequest.getAccountId());
-        Category category = categoryService.getCategoryById(transactionRequest.getCategoryId());
-        entity.setAccount(account);
-        entity.setCategory(category);
-        entity.setDateTime(transactionRequest.getDateTime());
-        entity.setPaymentType(transactionRequest.getPaymentType());
-        entity.setDescription(transactionRequest.getDescription());
-        entity.setAmount(transactionRequest.getAmount());
-        return transactionRepository.save(entity);
+        try {
+            Transaction entity = transactionRepository.findById(transactionId)
+                    .orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
+
+            Account account = accountService.getAccountById(transactionRequest.getAccountId());
+            Category category = categoryService.getCategoryById(transactionRequest.getCategoryId());
+
+            entity.setAccount(account);
+            entity.setCategory(category);
+            entity.setDateTime(transactionRequest.getDateTime());
+            entity.setPaymentType(transactionRequest.getPaymentType());
+            entity.setDescription(transactionRequest.getDescription());
+            entity.setAmount(transactionRequest.getAmount());
+
+            return transactionRepository.save(entity);
+        } catch (TransactionNotFoundException e) {
+            throw e;
+        } catch (AccountNotFoundException e) {
+            throw e;
+        } catch (CategoryNotFoundException e) {
+            throw e;
+        }
     }
 
     @Override
     public void deleteTransaction(int id) {
-        Transaction entity = transactionRepository.findById(id).orElseThrow(null);
-        entity.setDeleted(true);
-        transactionRepository.save(entity);
+        try {
+            Transaction entity = transactionRepository.findById(id)
+                    .orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
+
+            entity.setDeleted(true);
+            transactionRepository.save(entity);
+        } catch (TransactionNotFoundException e) {
+            throw e;
+        }
     }
 
     @Override
     public boolean hasTransaction(String transactionId) {
         try {
-            Transaction entity = transactionRepository.findById(Integer.valueOf(transactionId)).orElseThrow();
+            Transaction entity = transactionRepository.findById(Integer.valueOf(transactionId))
+                    .orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
             return entity.getId() == Integer.parseInt(transactionId);
-        } catch (Exception ignored) {
-            return false;
+        } catch (TransactionNotFoundException e) {
+            throw e;
         }
     }
 
     @Override
     public boolean hasPermission(String userName, String transactionId) {
         try {
-            User user = userRepository.findByEmail(userName).orElseThrow();
-            Transaction entity = transactionRepository.findById(Integer.valueOf(transactionId)).orElseThrow();
+            User user = userRepository.findByEmail(userName).orElseThrow(() -> new UserNotFoundException("User not found"));
+            Transaction entity = transactionRepository.findById(Integer.valueOf(transactionId))
+                    .orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
             return Objects.equals(entity.getUser().getUserId(), user.getUserId());
-        } catch (Exception ignored) {
-            return false;
+        } catch (UserNotFoundException | TransactionNotFoundException e) {
+            throw e;
         }
     }
 
     @Override
     public void updateBudget(Transaction transaction) {
-        Budget budget = budgetRepository.findByCategoryAndUser(transaction.getCategory(), transaction.getUser());
-        if (budget != null) {
-            System.out.println("Budget is not null");
-            long l = (long) transaction.getAmount();
-            long amount = (long) budget.getAmount();
-            budget.setUsed(budget.getUsed() + l);
-            budget.setBalance(amount - l);
-            budgetRepository.save(budget);
+        try {
+            Budget budget = budgetRepository.findByCategoryAndUser(transaction.getCategory(), transaction.getUser());
+            if (budget != null) {
+                long amount = (long) budget.getAmount();
+                budget.setUsed(budget.getUsed() + transaction.getAmount());
+                budget.setBalance(amount - transaction.getAmount());
+                budgetRepository.save(budget);
+            } else {
+                throw new TransactionProcessingException("Budget not found for the transaction");
+            }
+        } catch (TransactionProcessingException e) {
+            throw e;
         }
-        System.out.println("Budget is null");
     }
 }
+
+
+

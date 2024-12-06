@@ -8,6 +8,7 @@ import com.example.personalfinance.exception.budget.*;
 import com.example.personalfinance.exception.categories.CategoryAlreadyExistsException;
 import com.example.personalfinance.exception.categories.CategoryDeleteFailedException;
 import com.example.personalfinance.exception.categories.CategoryNotFoundException;
+import com.example.personalfinance.exception.transaction.TransactionNotFoundException;
 import com.example.personalfinance.exception.user.InvalidLoginException;
 import com.example.personalfinance.exception.user.ProfileImageUpdateException;
 import com.example.personalfinance.exception.user.UserNotFoundException;
@@ -23,7 +24,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAccountNotFoundException(AccountNotFoundException ex) {
         return buildResponse(HttpStatus.NOT_FOUND, "Account Not Found", ex.getMessage());
     }
-
 
 
     @ExceptionHandler(UnauthorizedAccessException.class)
@@ -115,7 +115,11 @@ public class GlobalExceptionHandler {
                 .body(new BaseResponse(ex.getMessage(), null));
     }
     
-    
+    //Transaction
+    @ExceptionHandler(TransactionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTransactionNotFoundException(TransactionNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, "Transaction Not Found", ex.getMessage());
+    }
     
     
     @ExceptionHandler(Exception.class)
