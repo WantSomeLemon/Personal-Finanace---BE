@@ -174,22 +174,22 @@ public class DebtServiceImpl implements DebtService {
 
     // Lấy danh sách các khoản nợ của người dùng theo yêu cầu (sắp xếp theo số tiền hoặc theo ngày đáo hạn)
     @Override
-    public List<Debt> debGet(String uName, Integer value) {
+    public List<Debt> debGet(String uName) {
         try {
             // Lấy người dùng hiện tại từ email (uName)
             User user = userRepository.findByEmail(uName).orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Dựa trên giá trị 'value' sẽ sắp xếp các khoản nợ
-            if (value == 1) {
-                // Sắp xếp theo số tiền giảm dần
-                return debtRepository.findAllByUserOrderByAmountDesc(user);
-            } else if (value == 2) {
-                // Sắp xếp theo ngày đáo hạn
-                List<Debt> debts = debtRepository.findAllByUser(user);
-                return debts.stream()
-                        .sorted(Comparator.comparing(debt -> parseDueDate(debt.getDueDate())))
-                        .collect(Collectors.toList());
-            }
+//            // Dựa trên giá trị 'value' sẽ sắp xếp các khoản nợ
+//            if (value == 1) {
+//                // Sắp xếp theo số tiền giảm dần
+//                return debtRepository.findAllByUserOrderByAmountDesc(user);
+//            } else if (value == 2) {
+//                // Sắp xếp theo ngày đáo hạn
+//                List<Debt> debts = debtRepository.findAllByUser(user);
+//                return debts.stream()
+//                        .sorted(Comparator.comparing(debt -> parseDueDate(debt.getDueDate())))
+//                        .collect(Collectors.toList());
+//            }
 
             // Trả về tất cả các khoản nợ của người dùng nếu không có yêu cầu đặc biệt
             return debtRepository.findAllByUser(user);
