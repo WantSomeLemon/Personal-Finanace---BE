@@ -4,6 +4,10 @@ import com.example.personalfinance.bean.response.AccountResponse;
 import com.example.personalfinance.entity.Account;
 import com.example.personalfinance.entity.Transaction;
 import com.example.personalfinance.entity.User;
+import com.example.personalfinance.exception.InvalidInputException;
+import com.example.personalfinance.exception.UnauthorizedAccessException;
+import com.example.personalfinance.exception.UserNotFoundException;
+import com.example.personalfinance.exception.account.*;
 import com.example.personalfinance.repository.AccountRepository;
 import com.example.personalfinance.repository.UserRepository;
 import com.example.personalfinance.service.AccountService;
@@ -33,22 +37,24 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean hasAccount(String accountId) {
         try {
-            Account entity = accountRepository.getOne(Integer.valueOf(accountId));
+            Account entity = accountRepository.findById(Integer.valueOf(accountId))
+                    .orElseThrow(() -> new AccountNotFoundException("Account with ID " + accountId + " not found"));
             return entity.getAccountId() == Integer.parseInt(accountId);
-        } catch (Exception ignored) {
-            return false;
+        } catch (NumberFormatException e) {
+            throw new InvalidInputException("Invalid account ID format: " + accountId);
         }
     }
 
     @Override
     public boolean hasPermission(String username, String accountId) {
-        try {
-            User user = userRepository.findByEmail(username).orElseThrow();
-            Account entity = accountRepository.getOne(Integer.valueOf(accountId));
-            return Objects.equals(entity.getUser().getUserId(), user.getUserId());
-        } catch (Exception ignored) {
-            return false;
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UserNotFoundException("User with email " + username + " not found"));
+        Account entity = accountRepository.findById(Integer.valueOf(accountId))
+                .orElseThrow(() -> new AccountNotFoundException("Account with ID " + accountId + " not found"));
+        if (!Objects.equals(entity.getUser().getUserId(), user.getUserId())) {
+            throw new UnauthorizedAccessException("User does not have permission for account ID " + accountId);
         }
+        return true;
     }
 
     @Override
@@ -65,12 +71,27 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void updateAccount(Account account, Integer accountId) {
-        Account acc = accountRepository.findById(accountId).orElseThrow();
-        acc.setCurrentBalance(account.getCurrentBalance());
-        acc.setName(account.getName());
-        acc.setPaymentTypes(account.getPaymentTypes());
-        accountRepository.save(acc);
+        try {
+            Account acc = accountRepository.findById(accountId)
+                    .orElseThrow(() -> new AccountNotFoundException("Account with ID " + accountId + " not found"));
+
+            // Validate the input fields (if necessary)
+            if (account.getCurrentBalance() < 0) {
+                throw new InvalidInputException("Current balance cannot be negative");
+            }
+
+            acc.setCurrentBalance(account.getCurrentBalance());
+            acc.setName(account.getName());
+            acc.setPaymentTypes(account.getPaymentTypes());
+
+            accountRepository.save(acc);
+        } catch (AccountNotFoundException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new AccountUpdateException("Failed to update account with ID " + accountId + ": " + ex.getMessage());
+        }
     }
+
 
     @Override
     public void addAccount(Account account, String userName) {
@@ -85,46 +106,49 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void deleteAccount(String accountId) {
-        try{
-            Account entity = accountRepository.findById(Integer.valueOf(accountId)).orElseThrow();
-            entity.setDeleted(true);
-            accountRepository.save(entity);
-        }catch (Exception ignored){
-            // Handle exception
-        }
+        Account entity = accountRepository.findById(Integer.valueOf(accountId))
+                .orElseThrow(() -> new AccountNotFoundException("Account with ID " + accountId + " not found"));
+        entity.setDeleted(true);
+        accountRepository.save(entity);
     }
 
     @Override
     public List<AccountResponse> getAccountsByUsername(String username) {
-        try{
-            User user = userRepository.findByEmail(username).orElseThrow();
-            List<Account> accountList = accountRepository.findAllByUserAndIsDeletedFalse(user);
-            List<AccountResponse> accountResponseList = new ArrayList<>();
-            for (Account account : accountList) {
-                double totalExpenses = 0;
-                double totalIncome = 0;
-            List<Transaction> transactionList = transactionService.getTransactionsByAccount(account);
-            for (Transaction transaction : transactionList) {
-                    if(transaction.getCategory().getType().equals("expense")){
-                        totalExpenses += transaction.getAmount();
-                    } else if (transaction.getCategory().getType().equals("income")) {
-                        totalIncome += transaction.getAmount();
-                    }
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UserNotFoundException("User with email " + username + " not found"));
+
+        List<Account> accountList = accountRepository.findAllByUserAndIsDeletedFalse(user);
+        if (accountList.isEmpty()) {
+            throw new AccountNotFoundException("No accounts found for user " + username);
+        }
+
+        List<AccountResponse> accountResponseList = new ArrayList<>();
+        for (Account account : accountList) {
+            double totalExpenses = 0;
+            double totalIncome = 0;
+            List<Transaction> transactionList;
+            try {
+                transactionList = transactionService.getTransactionsByAccount(account);
+            } catch (Exception e) {
+                throw new TransactionProcessingException("Error fetching transactions for account ID " + account.getAccountId());
             }
-                AccountResponse accountResponse = new AccountResponse(
+            for (Transaction transaction : transactionList) {
+                if ("expense".equals(transaction.getCategory().getType())) {
+                    totalExpenses += transaction.getAmount();
+                } else if ("income".equals(transaction.getCategory().getType())) {
+                    totalIncome += transaction.getAmount();
+                }
+            }
+            accountResponseList.add(new AccountResponse(
                     account.getAccountId(),
                     account.getName(),
                     account.getCurrentBalance(),
                     account.getPaymentTypes(),
                     totalExpenses,
                     totalIncome
-            );
-            accountResponseList.add(accountResponse);
-            }
-            return accountResponseList;
-        }catch(Exception e ){
-            return null;
+            ));
         }
+        return accountResponseList;
     }
 
     @Override

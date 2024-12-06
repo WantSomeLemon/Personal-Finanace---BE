@@ -3,6 +3,8 @@ package com.example.personalfinance.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.personalfinance.exception.budget.BudgetAlreadyExistsException;
+import com.example.personalfinance.exception.budget.BudgetCreationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,11 +41,17 @@ public class BudgetController {
 
     @GetMapping
     public ResponseEntity<BaseResponse> getAllBudgets(@RequestHeader(value = "Authorization") String token) {
-        User user = userRepository.findByEmail(jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token))).orElseThrow();
-        List<Budget> budgets = budgetService.getAllBudgetByUser(user);
-        return ResponseEntity.ok(new BaseResponse("success", budgets));
+        try {
+            User user = userRepository.findByEmail(jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token)))
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            List<Budget> budgets = budgetService.getAllBudgetByUser(user);
+            return ResponseEntity.ok(new BaseResponse("success", budgets));
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to fetch budgets: " + ex.getMessage());
+        }
     }
-    
+
+
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse> getBudgetById(@PathVariable("id") Long id) {
         Budget budget = budgetService.getBudgetById(id).orElse(null);
@@ -53,20 +61,22 @@ public class BudgetController {
         return ResponseEntity.ok(new BaseResponse("success", budget));
 
     }
-    
+
     @PostMapping
     public ResponseEntity<BaseResponse> createBudgets(@RequestHeader(value = "Authorization") String token,
                                                       @RequestBody BudgetRequest budgetRequest) {
-        String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
-        if (!budgetService.hasAlready(userName, budgetRequest.getCategoryId())) {
+        try {
+            String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
             Budget createdBudget = budgetService.createBudget(budgetRequest, userName);
-            return ResponseEntity.ok().body(new BaseResponse("success" ,createdBudget));
-
-        } else {
-            return ResponseEntity.ok(new BaseResponse("Already exist"));
+            return ResponseEntity.ok(new BaseResponse("success", createdBudget));
+        } catch (BudgetAlreadyExistsException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse("Budget already exists"));
+        } catch (BudgetCreationException ex) {
+            throw ex;
         }
     }
-    
+
+
     @PutMapping("/{id}")
     public ResponseEntity<BaseResponse> updateBudget(@PathVariable("id") Long id,
                                                      @RequestBody BudgetRequest budgetRequest) {

@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.personalfinance.exception.budget.*;
 import org.springframework.stereotype.Service;
 
 import com.example.personalfinance.bean.request.BudgetRequest;
@@ -43,23 +44,44 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public Budget createBudget(BudgetRequest budgetRequest, String userName) {
-        Category category = categoryService.getCategoryById(budgetRequest.getCategoryId());
-        User user = userRepository.findByEmail(userName).orElseThrow();
-        Budget budget = new Budget(category, budgetRequest.getAmount(), user, 0L, 0L);
-        return budgetRepository.save(budget);
+        if (hasAlready(userName, budgetRequest.getCategoryId())) {
+            throw new BudgetAlreadyExistsException("Budget for category ID " + budgetRequest.getCategoryId() + " already exists");
+        }
+        try {
+            Category category = categoryService.getCategoryById(budgetRequest.getCategoryId());
+            User user = userRepository.findByEmail(userName).orElseThrow(() ->
+                    new RuntimeException("User not found with username: " + userName));
+            Budget budget = new Budget(category, budgetRequest.getAmount(), user, 0L, 0L);
+            return budgetRepository.save(budget);
+        } catch (Exception ex) {
+            throw new BudgetCreationException("Failed to create budget: " + ex.getMessage());
+        }
     }
-
+    
     @Override
     public Budget updateBudget(Budget budget) {
-        return budgetRepository.save(budget);
+        try {
+            if (!budgetRepository.existsById(budget.getId())) {
+                throw new BudgetNotFoundException("Budget with ID " + budget.getId() + " not found");
+            }
+            return budgetRepository.save(budget);
+        } catch (Exception ex) {
+            throw new BudgetUpdateException("Failed to update budget: " + ex.getMessage());
+        }
     }
-
+    
     @Override
     public void deleteBudget(Long id) {
-        Budget budget = budgetRepository.findById(id).orElseThrow();
-        budget.setDeleted(true);
-        budgetRepository.save(budget);
+        try {
+            Budget budget = budgetRepository.findById(id)
+                    .orElseThrow(() -> new BudgetNotFoundException("Budget with ID " + id + " not found"));
+            budget.setDeleted(true);
+            budgetRepository.save(budget);
+        } catch (Exception ex) {
+            throw new BudgetDeletionException("Failed to delete budget: " + ex.getMessage());
+        }
     }
+
     @Override
     public boolean hasAlready(String userName, int categoryId) {
         User user = userRepository.findByEmail(userName).orElseThrow();

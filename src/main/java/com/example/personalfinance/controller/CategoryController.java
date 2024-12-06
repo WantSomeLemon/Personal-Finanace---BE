@@ -3,6 +3,11 @@ package com.example.personalfinance.controller;
 
 import java.util.List;
 
+import com.example.personalfinance.exception.UserNotFoundException;
+import com.example.personalfinance.exception.categories.CategoryAlreadyExistsException;
+import com.example.personalfinance.exception.categories.CategoryDeleteFailedException;
+import com.example.personalfinance.exception.categories.CategoryNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,33 +33,49 @@ public class CategoryController {
     private final JWTGenerator jwtGenerator;
 
     @GetMapping
-    public ResponseEntity<BaseResponse> getCategories(@RequestHeader(value = "Authorization") String token)
-    {
+    public ResponseEntity<BaseResponse> getCategories(@RequestHeader(value = "Authorization") String token) {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
-        List<Category> categories = categoryService.getCategoriesByUserName(userName);
-        return ResponseEntity.ok(new BaseResponse("success", categories));
+        try {
+            List<Category> categories = categoryService.getCategoriesByUserName(userName);
+            return ResponseEntity.ok(new BaseResponse("success", categories));
+        } catch (UserNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("User not found"));
+        }
     }
 
     @PostMapping
     public ResponseEntity<BaseResponse> addCategories(@RequestHeader(value = "Authorization") String token,
-                                    @RequestBody Category category)
-    {
+                                                      @RequestBody Category category) {
         String userName = jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token));
-        categoryService.addCategories(category, userName);
-        return ResponseEntity.ok(new BaseResponse("success", categoryService.getCategoryById(category.getCategoryId())));
+        try {
+            categoryService.addCategories(category, userName);
+            return ResponseEntity.ok(new BaseResponse("success", categoryService.getCategoryById(category.getCategoryId())));
+        } catch (CategoryAlreadyExistsException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse("Category already exists"));
+        } catch (UserNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("User not found"));
+        }
     }
 
     @DeleteMapping("/{category_id}")
-    public ResponseEntity<BaseResponse> deleteCategories(@PathVariable String category_id)
-    {   
-        categoryService.deleteCategories(Integer.parseInt(category_id));
-        return ResponseEntity.ok(new BaseResponse("success"));
+    public ResponseEntity<BaseResponse> deleteCategories(@PathVariable String category_id) {
+        try {
+            categoryService.deleteCategories(Integer.parseInt(category_id));
+            return ResponseEntity.ok(new BaseResponse("success"));
+        } catch (CategoryNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("Category not found"));
+        } catch (CategoryDeleteFailedException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse("Failed to delete category"));
+        }
     }
 
     @GetMapping("/total-transactions/{id}")
     public ResponseEntity<BaseResponse> sortTransaction(@RequestHeader(value = "Authorization") String token,
-                                                        @PathVariable("id") Integer categorId)
-    {
-        return categoryService.sortTransaction(categorId);
+                                                        @PathVariable("id") Integer categoryId) {
+        try {
+            return categoryService.sortTransaction(categoryId);
+        } catch (CategoryNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("Category not found"));
+        }
     }
 }
