@@ -7,6 +7,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.personalfinance.exception.goals.GoalCreationException;
+import com.example.personalfinance.exception.goals.GoalDeletionException;
+import com.example.personalfinance.exception.goals.GoalNotFoundException;
+import com.example.personalfinance.exception.goals.GoalUpdateException;
 import org.springframework.stereotype.Service;
 
 import com.example.personalfinance.entity.Goals;
@@ -23,24 +27,40 @@ public class GoalsServiceImpl implements GoalsService {
 
     @Override
     public Goals createGoal(Goals goals) {
-        return goalsRepository.save(goals);
+        try {
+            return goalsRepository.save(goals);
+        } catch (Exception ex) {
+            throw new GoalCreationException("Failed to create goal: " + ex.getMessage());
+        }
     }
     @Override
     public Goals updateGoal(Long id, Goals updatedGoal) {
-        Goals existingGoal = goalsRepository.findById(id).orElseThrow();
-        existingGoal.setName(updatedGoal.getName());
-        existingGoal.setDescription(updatedGoal.getDescription());
-        existingGoal.setStatus(updatedGoal.getStatus());
-        existingGoal.setTargetAmount(updatedGoal.getTargetAmount());
-        existingGoal.setTargetDate(updatedGoal.getTargetDate());
-        return goalsRepository.save(existingGoal);
+        try {
+            Goals existingGoal = goalsRepository.findById(id).orElseThrow(() -> new GoalNotFoundException("Goal not found for id: " + id));
+            existingGoal.setName(updatedGoal.getName());
+            existingGoal.setDescription(updatedGoal.getDescription());
+            existingGoal.setStatus(updatedGoal.getStatus());
+            existingGoal.setTargetAmount(updatedGoal.getTargetAmount());
+            existingGoal.setTargetDate(updatedGoal.getTargetDate());
+            return goalsRepository.save(existingGoal);
+        } catch (GoalNotFoundException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new GoalUpdateException("Failed to update goal: " + ex.getMessage());
+        }
     }
 
     @Override
     public void deleteGoal(Long id) {
-       Goals existingGoal = goalsRepository.findById(id).orElseThrow(null);
-       existingGoal.setDeleted(true);
-       goalsRepository.save(existingGoal);
+        try {
+            Goals existingGoal = goalsRepository.findById(id).orElseThrow(() -> new GoalNotFoundException("Goal not found for id: " + id));
+            existingGoal.setDeleted(true);
+            goalsRepository.save(existingGoal);
+        } catch (GoalNotFoundException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new GoalDeletionException("Failed to delete goal: " + ex.getMessage());
+        }
     }
 
     @Override
@@ -57,7 +77,7 @@ public class GoalsServiceImpl implements GoalsService {
                         .atZone(ZoneOffset.UTC)
                         .toLocalDate();
 
-                // Định dạng ngày theo kiểu yyyy-MM-dd
+                // Format date to yyyy-MM-dd
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 String formattedDate = date.format(formatter);
                 goal.setTargetDate(formattedDate);

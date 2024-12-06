@@ -8,6 +8,10 @@ import com.example.personalfinance.exception.budget.*;
 import com.example.personalfinance.exception.categories.CategoryAlreadyExistsException;
 import com.example.personalfinance.exception.categories.CategoryDeleteFailedException;
 import com.example.personalfinance.exception.categories.CategoryNotFoundException;
+import com.example.personalfinance.exception.goals.GoalCreationException;
+import com.example.personalfinance.exception.goals.GoalDeletionException;
+import com.example.personalfinance.exception.goals.GoalNotFoundException;
+import com.example.personalfinance.exception.goals.GoalUpdateException;
 import com.example.personalfinance.exception.transaction.TransactionNotFoundException;
 import com.example.personalfinance.exception.user.InvalidLoginException;
 import com.example.personalfinance.exception.user.ProfileImageUpdateException;
@@ -120,7 +124,27 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleTransactionNotFoundException(TransactionNotFoundException ex) {
         return buildResponse(HttpStatus.NOT_FOUND, "Transaction Not Found", ex.getMessage());
     }
-    
+
+    //Goals
+    @ExceptionHandler(GoalNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleGoalNotFoundException(GoalNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, "Goal Not Found", ex.getMessage());
+    }
+
+    @ExceptionHandler(GoalCreationException.class)
+    public ResponseEntity<ErrorResponse> handleGoalCreationException(GoalCreationException ex) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Goal Creation Failed", ex.getMessage());
+    }
+
+    @ExceptionHandler(GoalUpdateException.class)
+    public ResponseEntity<ErrorResponse> handleGoalUpdateException(GoalUpdateException ex) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Goal Update Failed", ex.getMessage());
+    }
+
+    @ExceptionHandler(GoalDeletionException.class)
+    public ResponseEntity<ErrorResponse> handleGoalDeletionException(GoalDeletionException ex) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Goal Deletion Failed", ex.getMessage());
+    }
     
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
