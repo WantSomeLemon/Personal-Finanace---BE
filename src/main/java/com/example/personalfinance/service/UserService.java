@@ -23,8 +23,7 @@ public interface UserService {
     void updateUserProfileName(ProfileNameRequest profileName, String userName);
 
     void updateUserProfileEmail(ProfileEmailRequest profileEmail, String userName);
-
-    void sendVerificationEmail(String email) throws MessagingException, UnsupportedEncodingException;
+    
 
     void newPassword(String email, String password);
     

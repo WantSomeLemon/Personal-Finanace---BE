@@ -6,7 +6,7 @@ import com.example.personalfinance.entity.Transaction;
 import com.example.personalfinance.entity.User;
 import com.example.personalfinance.exception.InvalidInputException;
 import com.example.personalfinance.exception.UnauthorizedAccessException;
-import com.example.personalfinance.exception.UserNotFoundException;
+import com.example.personalfinance.exception.user.UserNotFoundException;
 import com.example.personalfinance.exception.account.*;
 import com.example.personalfinance.repository.AccountRepository;
 import com.example.personalfinance.repository.UserRepository;

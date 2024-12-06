@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import com.example.personalfinance.exception.user.ProfileImageUpdateException;
+import com.example.personalfinance.exception.user.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,15 +57,16 @@ public class UserController {
         this.emailService = emailService;
     }
 
-    @GetMapping("/test")
-    public String getMethodName() {
-        return "tien";
-    }
-    
 
     @PostMapping("/auth/register")
     public ResponseEntity<BaseResponse> register(@RequestBody User user) {
-        return userService.register(user);
+        try {
+            return userService.register(user);
+        } catch (UserNotFoundException ex) {
+            return ResponseEntity.status(404).body(new BaseResponse("error", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(new BaseResponse("error", "An unexpected error occurred"));
+        }
     }
 
     @PostMapping("/auth/login")
@@ -83,16 +86,19 @@ public class UserController {
     }
 
     @PostMapping("/profile/image")
-    public ResponseEntity<BaseResponse> updatedProfilePicture(@RequestHeader(value = "Authorization") String token,
-                                                              @ModelAttribute ProfileImgRequest profileImgRequest) {
+    public ResponseEntity<BaseResponse> updateProfileImage(@RequestHeader(value = "Authorization") String token,
+                                                           @ModelAttribute ProfileImgRequest profileImgRequest) {
         try {
             String username = jwtGenerator.getUsernameFromJWT(token);
             userService.updateUserProfileImage(profileImgRequest, username);
             return ResponseEntity.ok(new BaseResponse("success", profileImgRequest));
+        } catch (ProfileImageUpdateException ex) {
+            return ResponseEntity.internalServerError().body(new BaseResponse("error", ex.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new BaseResponse("Fail to update user profile image.", e));
+            return ResponseEntity.internalServerError().body(new BaseResponse("error", "Failed to update profile image"));
         }
     }
+
 
     @PostMapping("/profile/name")
     public ResponseEntity<BaseResponse> updateProfileName(@RequestHeader(value = "Authorization") String token,
@@ -179,8 +185,10 @@ public class UserController {
     public ResponseEntity<BaseResponse> getUserProfileHandler(@RequestHeader("Authorization") String jwt) {
         try {
             return userService.getUserProfile(jwt);
+        } catch (UserNotFoundException ex) {
+            return ResponseEntity.status(404).body(new BaseResponse("error", ex.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new BaseResponse("Failed to retrieve user profile.", e));
+            return ResponseEntity.internalServerError().body(new BaseResponse("error", "Failed to retrieve user profile"));
         }
     }
 }

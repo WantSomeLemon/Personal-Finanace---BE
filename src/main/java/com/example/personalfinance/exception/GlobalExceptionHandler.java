@@ -1,10 +1,16 @@
 package com.example.personalfinance.exception;
 
-import com.example.personalfinance.exception.account.*;
+import com.example.personalfinance.bean.response.BaseResponse;
+import com.example.personalfinance.exception.account.AccountNotFoundException;
+import com.example.personalfinance.exception.account.AccountUpdateException;
+import com.example.personalfinance.exception.account.TransactionProcessingException;
 import com.example.personalfinance.exception.budget.*;
 import com.example.personalfinance.exception.categories.CategoryAlreadyExistsException;
 import com.example.personalfinance.exception.categories.CategoryDeleteFailedException;
 import com.example.personalfinance.exception.categories.CategoryNotFoundException;
+import com.example.personalfinance.exception.user.InvalidLoginException;
+import com.example.personalfinance.exception.user.ProfileImageUpdateException;
+import com.example.personalfinance.exception.user.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,10 +24,7 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.NOT_FOUND, "Account Not Found", ex.getMessage());
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
-        return buildResponse(HttpStatus.NOT_FOUND, "User Not Found", ex.getMessage());
-    }
+
 
     @ExceptionHandler(UnauthorizedAccessException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
@@ -73,7 +76,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBudgetDeletionException(BudgetDeletionException ex) {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Budget Deletion Failed", ex.getMessage());
     }
+
+    @ExceptionHandler(BudgetFetchException.class)
+    public ResponseEntity<BaseResponse> handleBudgetFetchException(BudgetFetchException ex) {
+        return new ResponseEntity<>(new BaseResponse("error", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     
+    //Category
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(CategoryNotFoundException ex) {
         return buildResponse(HttpStatus.NOT_FOUND, "Category Not Found", ex.getMessage());
@@ -87,6 +96,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CategoryDeleteFailedException.class)
     public ResponseEntity<ErrorResponse> handleCategoryDeleteFailedException(CategoryDeleteFailedException ex) {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Category Delete Failed", ex.getMessage());
+    }
+    
+    //User
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, "User Not Found", ex.getMessage());
+    }
+    
+    @ExceptionHandler(ProfileImageUpdateException.class)
+    public ResponseEntity<BaseResponse> handleProfileImageUpdateException(ProfileImageUpdateException ex) {
+        return new ResponseEntity<>(new BaseResponse("error", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InvalidLoginException.class)
+    public ResponseEntity<BaseResponse> handleInvalidLoginException(InvalidLoginException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new BaseResponse(ex.getMessage(), null));
     }
     
     

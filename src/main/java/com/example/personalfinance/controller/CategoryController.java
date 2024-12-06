@@ -3,7 +3,7 @@ package com.example.personalfinance.controller;
 
 import java.util.List;
 
-import com.example.personalfinance.exception.UserNotFoundException;
+import com.example.personalfinance.exception.user.UserNotFoundException;
 import com.example.personalfinance.exception.categories.CategoryAlreadyExistsException;
 import com.example.personalfinance.exception.categories.CategoryDeleteFailedException;
 import com.example.personalfinance.exception.categories.CategoryNotFoundException;

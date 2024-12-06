@@ -1,9 +1,8 @@
 package com.example.personalfinance.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.example.personalfinance.exception.UserNotFoundException;
+import com.example.personalfinance.exception.user.UserNotFoundException;
 import com.example.personalfinance.exception.budget.BudgetAlreadyExistsException;
 import com.example.personalfinance.exception.budget.BudgetCreationException;
 import com.example.personalfinance.exception.budget.BudgetNotFoundException;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.personalfinance.bean.request.BudgetRequest;
 import com.example.personalfinance.bean.response.BaseResponse;
 import com.example.personalfinance.config.auth.JWTGenerator;
-import com.example.personalfinance.entity.Account;
 import com.example.personalfinance.entity.Budget;
 import com.example.personalfinance.entity.Category;
 import com.example.personalfinance.entity.User;

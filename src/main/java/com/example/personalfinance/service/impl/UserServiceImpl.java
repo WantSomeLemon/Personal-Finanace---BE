@@ -5,6 +5,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.example.personalfinance.exception.user.InvalidLoginException;
+import com.example.personalfinance.exception.user.ProfileImageUpdateException;
+import com.example.personalfinance.exception.user.UserNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,17 +47,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserProfileImage(ProfileImgRequest profileImg, String userName) {
         try {
-            User user = userRepository.findByEmail(userName).orElseThrow();
+            User user = userRepository.findByEmail(userName).orElseThrow(() -> new UserNotFoundException("User not found with email: " + userName));
             user.setProfileImage(profileImg.getImage().getBytes());
             userRepository.save(user);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ProfileImageUpdateException("Failed to update profile image.");
         }
     }
 
     @Override
     public void updateUserProfileName(ProfileNameRequest profileName, String userName) {
-        User user = userRepository.findByEmail(userName).orElseThrow();
+        User user = userRepository.findByEmail(userName).orElseThrow(() -> new UserNotFoundException("User not found with email: " + userName));
         user.setFirstName(profileName.getFirstName());
         user.setLastName(profileName.getLastName());
         userRepository.save(user);
@@ -62,43 +65,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUserProfileEmail(ProfileEmailRequest profileEmail, String userName) {
-        User user = userRepository.findByEmail(userName).orElseThrow();
+        User user = userRepository.findByEmail(userName).orElseThrow(() -> new UserNotFoundException("User not found with email: " + userName));
         user.setEmail(profileEmail.getEmail());
         userRepository.save(user);
     }
-
-    @Override
-    public void sendVerificationEmail(String email) throws MessagingException, UnsupportedEncodingException {
-        String fromAddress = "PersonalFinance@outlook.com"; //not create a real email account right now
-        String senderName = "Personal Finance Team";
-        String subject = "Personal Finance Team account security code";
-        String content = "<div>\n" +
-                        "    <span style=\"color:#808080;padding: 2px;font-family: sans-serif;\">Personal Finance Account</span><br>\n" +
-                        "    <span style=\"color:#5C6AC4;padding: 2px;font-size:32px;font-family: sans-serif;\"><b>Security code</b></span><br><br>\n" +
-                        "    <span style=\"font-family: sans-serif;\">Please use the following security code for the Personal Finance account.</span><br><br><br>\n" +
-                        "    <span style=\"font-family: sans-serif;\">Security code: <b>[[CODE]]</b></span><br><br><br>\n" +
-                        "    <span style=\"font-family: sans-serif;\">Thanks,</span><br>\n" +
-                        "    <span style=\"font-family: sans-serif;\">The Personal Finance Team</span>\n" +
-                        "</div>";
-
-    }
-
+    
     @Override
     public void newPassword(String email, String password) {
         User user = userRepository.findByEmail(email).orElseThrow();
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
     }
-    
+
     @Override
     public ResponseEntity<BaseResponse> updatePassord(ProfilePasswordRequest profilePassword, String userName) {
-        User user = userRepository.findByEmail(userName).orElseThrow();
-        //getOldPassword: request
-        //getNewPassword: request
-        //user.getPassword: database
-        if(new BCryptPasswordEncoder().matches(profilePassword.getOldPassword(), user.getPassword())) {
-            if(new BCryptPasswordEncoder().matches(profilePassword.getNewPassword(), user.getPassword())) {
-                return ResponseEntity.badRequest().body(new BaseResponse("New Password can't be same as Old Password!", null));
+        User user = userRepository.findByEmail(userName).orElseThrow(() -> new UserNotFoundException("User not found with email: " + userName));
+        if (new BCryptPasswordEncoder().matches(profilePassword.getOldPassword(), user.getPassword())) {
+            if (new BCryptPasswordEncoder().matches(profilePassword.getNewPassword(), user.getPassword())) {
+                return ResponseEntity.badRequest().body(new BaseResponse("New Password can't be the same as Old Password!", null));
             }
             user.setPassword(passwordEncoder.encode(profilePassword.getNewPassword()));
             userRepository.save(user);
@@ -106,7 +90,7 @@ public class UserServiceImpl implements UserService {
         }
         return ResponseEntity.badRequest().body(new BaseResponse("Old Password does not match", null));
     }
-    
+
     @Override
     public ResponseEntity<BaseResponse> register(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
@@ -121,24 +105,17 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<BaseResponse> login(LoginRequest user) {
         // Retrieve the user from the database
         User userEntity = userRepository.findByEmail(user.getEmail()).orElse(null);
-        
+
         // Validate email and password
-        if(userEntity == null || !new BCryptPasswordEncoder().matches(user.getPassword(), userEntity.getPassword())) {
-            return ResponseEntity.badRequest().body(new BaseResponse("Incorrect Email or Password...", null));
+        if (userEntity == null || !new BCryptPasswordEncoder().matches(user.getPassword(), userEntity.getPassword())) {
+            throw new InvalidLoginException("Incorrect Email or Password...");
         }
 
         // Authenticate the user
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        // Dynamically update the secret for token generation
-        String dynamicSecret = "dynamicSecretOf" + System.currentTimeMillis()
-                + "UserID" + userEntity.getUserId()
-                +  "withUserName" + userEntity.getFirstName() + userEntity.getLastName()
-                + "secretToken"; // Example dynamic secret
-      
-
+        
         // Generate the JWT token
         String token = jwtGenerator.generateToken(authentication);
         if (token == null || token.isEmpty()) {
@@ -149,9 +126,6 @@ public class UserServiceImpl implements UserService {
         Map<Object, Object> data = new HashMap<>();
         data.put("token", token);
 
-        System.out.println("Generated Token: " + token);
-        
-        // Return the response
         return ResponseEntity.ok(new BaseResponse("Login Success", data));
     }
 

@@ -4,7 +4,7 @@ import com.example.personalfinance.bean.response.BaseResponse;
 import com.example.personalfinance.entity.Category;
 import com.example.personalfinance.entity.Transaction;
 import com.example.personalfinance.entity.User;
-import com.example.personalfinance.exception.UserNotFoundException;
+import com.example.personalfinance.exception.user.UserNotFoundException;
 import com.example.personalfinance.exception.categories.CategoryAlreadyExistsException;
 import com.example.personalfinance.exception.categories.CategoryDeleteFailedException;
 import com.example.personalfinance.exception.categories.CategoryNotFoundException;
