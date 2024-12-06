@@ -38,12 +38,9 @@ public class GoalsServiceImpl implements GoalsService {
 
     @Override
     public void deleteGoal(Long id) {
-       Optional<Goals> existingGoal = goalsRepository.findById(id);
-       if(existingGoal.isPresent()) {
-           goalsRepository.deleteById(id);
-       }else {
-           throw new IllegalArgumentException("Goal with id " + id + " not exist.");
-       }
+       Goals existingGoal = goalsRepository.findById(id).orElseThrow(null);
+       existingGoal.setDeleted(true);
+       goalsRepository.save(existingGoal);
     }
 
     @Override

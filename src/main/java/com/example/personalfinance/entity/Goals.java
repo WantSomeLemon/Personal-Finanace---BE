@@ -15,7 +15,7 @@ import lombok.Data;
 @Table(name = "goals")
 @Entity
 @Data
-public class Goals {
+public class Goals extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
