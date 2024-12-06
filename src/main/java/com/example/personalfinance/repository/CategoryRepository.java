@@ -10,5 +10,5 @@ import com.example.personalfinance.entity.User;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
-    List<Category> findAllByUserId(User userId);
+    List<Category> findAllByUserIdAndIsDeletedFalse(User userId);
 }

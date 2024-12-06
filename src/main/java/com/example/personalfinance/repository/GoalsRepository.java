@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface GoalsRepository extends JpaRepository<Goals, Long> {
-    List<Goals> findAllByUser(User user);
+    List<Goals> findAllByUserAndIsDeletedFalse(User user);
 }

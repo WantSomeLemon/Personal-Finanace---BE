@@ -193,7 +193,7 @@ public class DebtServiceImpl implements DebtService {
 //            }
 
             // Trả về tất cả các khoản nợ của người dùng nếu không có yêu cầu đặc biệt
-            return debtRepository.findAllByUser(user);
+            return debtRepository.findAllByUserAndIsDeletedFalse(user);
         } catch (Exception e) {
             // Xử lý lỗi và trả về null nếu có vấn đề
             e.printStackTrace();

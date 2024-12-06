@@ -31,7 +31,7 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public List<Budget> getAllBudgetByUser(User user) {
-        List<Object[]> results = budgetRepository.findAllByUser(user.getUserId());
+        List<Object[]> results = budgetRepository.findAllByUserIsDeletedFalse(user.getUserId());
 
         return mapResultsToBudgets(results, user);
     }
@@ -63,7 +63,7 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     public boolean hasAlready(String userName, int categoryId) {
         User user = userRepository.findByEmail(userName).orElseThrow();
-        List<Object[]> results = budgetRepository.findAllByUser(user.getUserId());
+        List<Object[]> results = budgetRepository.findAllByUserIsDeletedFalse(user.getUserId());
 
         List<Budget> budgetList = mapResultsToBudgets(results, user);
         

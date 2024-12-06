@@ -25,7 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
     public List<Category> getCategoriesByUserName(String userName) {
         try {
             User user = userRepository.findByEmail(userName).orElseThrow();
-            return categoryRepository.findAllByUserId(user);
+            return categoryRepository.findAllByUserIdAndIsDeletedFalse(user);
         } catch (Exception e) {
             return null;
         }

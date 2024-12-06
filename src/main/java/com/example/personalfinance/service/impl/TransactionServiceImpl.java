@@ -36,7 +36,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<Transaction> getTransactionsByUserName(String userName) {
         try {
             User user = userRepository.findByEmail(userName).orElseThrow();
-            List<Transaction> transactionList = transactionRepository.findAllByUser(user);
+            List<Transaction> transactionList = transactionRepository.findAllByUserAndIsDeletedFalse(user);
             transactionList.sort(Collections.reverseOrder());
             return transactionList;
         } catch (UsernameNotFoundException e) {

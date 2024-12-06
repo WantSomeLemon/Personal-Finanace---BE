@@ -29,10 +29,10 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
                        AND b.category_id = t.category_id), 0)
             ) AS balance
         FROM budgets b
-        WHERE b.user_id = ?1
+        WHERE b.user_id = ?1, b.deleted = false
         """, nativeQuery = true)
-    List<Object[]> findAllByUser(Integer userId);
-
+    List<Object[]> findAllByUserIsDeletedFalse(Integer userId);
+    
     Budget findByCategoryAndUser(Category category, User user);
 
 }

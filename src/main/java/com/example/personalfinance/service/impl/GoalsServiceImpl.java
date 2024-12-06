@@ -50,7 +50,7 @@ public class GoalsServiceImpl implements GoalsService {
 
     @Override
     public List<Goals> getAllGoalsByUser(User user) {
-        List<Goals> goalsList = goalsRepository.findAllByUser(user);
+        List<Goals> goalsList = goalsRepository.findAllByUserAndIsDeletedFalse(user);
         for (Goals goal : goalsList) {
             if (goal.getTargetDate() != null) {
                 LocalDate date = Instant.ofEpochMilli(Long.parseLong(goal.getTargetDate()))

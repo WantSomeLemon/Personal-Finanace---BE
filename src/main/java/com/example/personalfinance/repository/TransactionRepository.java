@@ -12,7 +12,7 @@ import com.example.personalfinance.entity.User;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
-        List<Transaction> findAllByUser(User user);
+        List<Transaction> findAllByUserAndIsDeletedFalse(User user);
 
         List<Transaction> findAllByAccount(Account account);
 

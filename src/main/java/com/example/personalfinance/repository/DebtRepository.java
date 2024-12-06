@@ -10,7 +10,7 @@ import com.example.personalfinance.entity.User;
 
 @Repository
 public interface DebtRepository extends JpaRepository<Debt, Integer> {
-    List<Debt> findAllByUser(User user);
+    List<Debt> findAllByUserAndIsDeletedFalse(User user);
     List<Debt> findAllByUserOrderByDueDateAsc(User user);
     List<Debt> findAllByUserOrderByAmountDesc(User user);
 }
