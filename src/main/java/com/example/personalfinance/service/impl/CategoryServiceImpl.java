@@ -10,7 +10,6 @@ import com.example.personalfinance.repository.UserRepository;
 import com.example.personalfinance.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +20,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
+
     @Override
     public List<Category> getCategoriesByUserName(String userName) {
         try {
@@ -32,27 +32,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public String addCategories(Category category, String userName) {
-        try {
-            User user = userRepository.findByEmail(userName).orElseThrow();
-            category.setUserId(user);
-            categoryRepository.save(category);
-            return "success";
-        } catch (UsernameNotFoundException e) {
-            return e.getMessage();
-        }
+    public void addCategories(Category category, String userName) {
+        User user = userRepository.findByEmail(userName).orElseThrow();
+        category.setUserId(user);
+        categoryRepository.save(category);
     }
 
     @Override
-    public String deleteCategories(int category_TD) {
-        try {
-            Category entity = categoryRepository.getById(category_TD);
-            categoryRepository.delete(entity);
-        } catch (Exception e) {
-            return e.getMessage();
-        }
-        return "success";
+    public void deleteCategories(int category_TD) {
+        Category entity = categoryRepository.getById(category_TD);
+        entity.setDeleted(true);
+        categoryRepository.save(entity);
     }
+
     @Override
     public Category getCategoryById(Integer id) {
         return categoryRepository.findById(id).orElseThrow();

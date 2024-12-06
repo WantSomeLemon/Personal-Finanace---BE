@@ -11,9 +11,9 @@ import java.util.List;
 public interface CategoryService {
     List<Category> getCategoriesByUserName(String userName);
 
-    String addCategories(Category category, String userName);
+    void addCategories(Category category, String userName);
 
-    String deleteCategories(int category_TD);
+    void deleteCategories(int category_TD);
 
     Category getCategoryById(Integer id);
 
