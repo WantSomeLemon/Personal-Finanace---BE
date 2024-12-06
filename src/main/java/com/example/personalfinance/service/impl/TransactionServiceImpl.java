@@ -119,15 +119,18 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void updateBudget(Transaction transaction) {
-        Budget budget = budgetRepository.findByCategoryAndUser(transaction.getCategory(), transaction.getUser());
-        if (budget != null) {
-            System.out.println("Budget is not null");
-            long l = (long) transaction.getAmount();
-            long amount = (long) budget.getAmount();
-            budget.setUsed(budget.getUsed() + l);
-            budget.setBalance(amount - l);
-            budgetRepository.save(budget);
+        try {
+            Budget budget = budgetRepository.findByCategoryAndUser(transaction.getCategory(), transaction.getUser());
+            if (budget != null) {
+                long amount = (long) budget.getAmount();
+                budget.setUsed(budget.getUsed() + transaction.getAmount());
+                budget.setBalance(amount - transaction.getAmount());
+                budgetRepository.save(budget);
+            } else {
+                throw new TransactionProcessingException("Budget not found for the transaction");
+            }
+        } catch (TransactionProcessingException e) {
+            throw e; // rethrow the exception to be handled by GlobalExceptionHandler
         }
-        System.out.println("Budget is null");
     }
 }
