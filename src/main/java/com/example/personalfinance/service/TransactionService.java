@@ -14,9 +14,9 @@ public interface TransactionService {
 
     List<Transaction> getTransactionsByAccount(Account account);
 
-    void addTransaction(TransactionRequest transactionRequest, String userName);
+    Transaction addTransaction(TransactionRequest transactionRequest, String userName);
 
-    void updateTransaction(TransactionRequest transactionRequest, Integer transactionId, String userName);
+    Transaction updateTransaction(TransactionRequest transactionRequest, Integer transactionId, String userName);
 
     void deleteTransaction(int id);
 
