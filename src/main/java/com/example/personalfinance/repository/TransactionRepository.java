@@ -36,7 +36,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
             "        SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END) AS expenses,\n" +
             "        SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END) AS income\n" +
             "    FROM transactions t\n" +
-            "    JOIN categories c ON t.category_id = c.id\n" +
+            "    JOIN categories c ON t.category_id = c.category_id\n" +
             "    WHERE\n" +
             "        t.user_id = ?1 AND\n" +
             "        FROM_UNIXTIME(t.date_time/1000) >= DATE_SUB(DATE_FORMAT(NOW(), '%Y-%m-01'), INTERVAL 5 MONTH)\n" +
@@ -50,7 +50,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
                         "COALESCE(SUM(t.amount), 0) AS expenses " +
                         "FROM " +
                         "transactions t " +
-                        "JOIN categories c ON t.category_id = c.id " +
+                        "JOIN categories c ON t.category_id = c.category_id " +
                         "WHERE " +
                         "t.user_id = ?1 " +
                         "AND c.type = 'expense' " +
@@ -67,7 +67,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
                         "COALESCE(SUM(t.amount), 0) AS income " +
                         "FROM " +
                         "transactions t " +
-                        "JOIN categories c ON t.category_id = c.id " +
+                        "JOIN categories c ON t.category_id = c.category_id " +
                         "WHERE " +
                         "t.user_id = ?1 " +
                         "AND c.type = 'income' " +
@@ -86,7 +86,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
                         +
                         "FROM " +
                         "    transactions t " +
-                        "    JOIN categories c ON t.category_id = c.id " +
+                        "    JOIN categories c ON t.category_id = c.category_id " +
                         "WHERE " +
                         "    t.user_id = ?1 " +
                         "    AND MONTH(FROM_UNIXTIME(t.date_time/1000)) = MONTH(NOW()) " +
