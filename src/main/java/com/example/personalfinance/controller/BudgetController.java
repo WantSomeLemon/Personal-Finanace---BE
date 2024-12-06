@@ -3,8 +3,10 @@ package com.example.personalfinance.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.personalfinance.exception.UserNotFoundException;
 import com.example.personalfinance.exception.budget.BudgetAlreadyExistsException;
 import com.example.personalfinance.exception.budget.BudgetCreationException;
+import com.example.personalfinance.exception.budget.BudgetNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,23 +45,24 @@ public class BudgetController {
     public ResponseEntity<BaseResponse> getAllBudgets(@RequestHeader(value = "Authorization") String token) {
         try {
             User user = userRepository.findByEmail(jwtGenerator.getUsernameFromJWT(jwtGenerator.getTokenFromHeader(token)))
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
             List<Budget> budgets = budgetService.getAllBudgetByUser(user);
             return ResponseEntity.ok(new BaseResponse("success", budgets));
-        } catch (Exception ex) {
-            throw new RuntimeException("Failed to fetch budgets: " + ex.getMessage());
+        } catch (UserNotFoundException ex) {
+            throw ex; // Rethrow custom exception
         }
     }
 
 
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse> getBudgetById(@PathVariable("id") Long id) {
-        Budget budget = budgetService.getBudgetById(id).orElse(null);
-        if (budget == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("budget not found"));
+        try {
+            Budget budget = budgetService.getBudgetById(id)
+                    .orElseThrow(() -> new BudgetNotFoundException("Budget with ID " + id + " not found"));
+            return ResponseEntity.ok(new BaseResponse("success", budget));
+        } catch (BudgetNotFoundException ex) {
+            throw ex; // Rethrow custom exception
         }
-        return ResponseEntity.ok(new BaseResponse("success", budget));
-
     }
 
     @PostMapping
