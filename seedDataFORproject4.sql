@@ -1,5 +1,3 @@
-use personal_finance;
-
 
 -- Insert dữ liệu
 
@@ -92,47 +90,47 @@ VALUES
 -- Categories for User 1
 INSERT INTO categories ( name, description, type, user_id, deleted, created_at, updated_at)
 VALUES
-('Salary', 'Income from job', 'Income', 1, 0, NOW(), NOW()),
-('Groceries', 'Daily food expenses', 'Expenses', 1, 0, NOW(), NOW()),
-('Rent', 'Monthly rent payments', 'Expenses', 1, 0, NOW(), NOW()),
-('Investment', 'Money invested', 'Expenses', 1, 0, NOW(), NOW()),
-('Entertainment', 'Leisure and hobbies', 'Expenses', 1, 0, NOW(), NOW());
+('Salary', 'Income from job', 'income', 1, 0, NOW(), NOW()),
+('Groceries', 'Daily food expenses', 'expense', 1, 0, NOW(), NOW()),
+('Rent', 'Monthly rent payments', 'expense', 1, 0, NOW(), NOW()),
+('Investment', 'Money invested', 'expense', 1, 0, NOW(), NOW()),
+('Entertainment', 'Leisure and hobbies', 'expense', 1, 0, NOW(), NOW());
 
 -- Categories for User 2
 INSERT INTO categories ( name, description, type, user_id, deleted, created_at, updated_at)
 VALUES
-('Salary', 'Monthly salary', 'Income', 2, 0, NOW(), NOW()),
-('Groceries', 'Monthly groceries expenses', 'Expenses', 2, 0, NOW(), NOW()),
-('Transport', 'Transportation costs', 'Expenses', 2, 0, NOW(), NOW()),
-('Entertainment', 'Leisure activities', 'Expenses', 2, 0, NOW(), NOW()),
-('Savings', 'Savings contributions', 'Expenses', 2, 0, NOW(), NOW());
+('Salary', 'Monthly salary', 'income', 2, 0, NOW(), NOW()),
+('Groceries', 'Monthly groceries expenses', 'expense', 2, 0, NOW(), NOW()),
+('Transport', 'Transportation costs', 'expense', 2, 0, NOW(), NOW()),
+('Entertainment', 'Leisure activities', 'expense', 2, 0, NOW(), NOW()),
+('Savings', 'Savings contributions', 'expense', 2, 0, NOW(), NOW());
 
 -- Categories for User 3
 INSERT INTO categories ( name, description, type, user_id, deleted, created_at, updated_at)
 VALUES
-('Freelance', 'Income from freelance work', 'Income', 3, 0, NOW(), NOW()),
-('Food', 'Expenses for dining out', 'Expenses', 3, 0, NOW(), NOW()),
-('Travel', 'Travel and commuting', 'Expenses', 3, 0, NOW(), NOW()),
-('Healthcare', 'Medical expenses', 'Expenses', 3, 0, NOW(), NOW()),
-('Investments', 'Funds allocated for investments', 'Expenses', 3, 0, NOW(), NOW());
+('Freelance', 'Income from freelance work', 'income', 3, 0, NOW(), NOW()),
+('Food', 'Expenses for dining out', 'expense', 3, 0, NOW(), NOW()),
+('Travel', 'Travel and commuting', 'expense', 3, 0, NOW(), NOW()),
+('Healthcare', 'Medical expenses', 'expense', 3, 0, NOW(), NOW()),
+('Investments', 'Funds allocated for investments', 'expense', 3, 0, NOW(), NOW());
 
 -- Categories for User 4
 INSERT INTO categories (name, description, type, user_id, deleted, created_at, updated_at)
 VALUES
-('Business', 'Income from business', 'Income', 4, 0, NOW(), NOW()),
-('Groceries', 'Groceries expenses', 'Expenses', 4, 0, NOW(), NOW()),
-('Utilities', 'Electricity and water bills', 'Expenses', 4, 0, NOW(), NOW()),
-('Healthcare', 'Medical expenses', 'Expenses', 4, 0, NOW(), NOW()),
-('Savings', 'Savings allocation', 'Expenses', 4, 0, NOW(), NOW());
+('Business', 'Income from business', 'income', 4, 0, NOW(), NOW()),
+('Groceries', 'Groceries expenses', 'expense', 4, 0, NOW(), NOW()),
+('Utilities', 'Electricity and water bills', 'expense', 4, 0, NOW(), NOW()),
+('Healthcare', 'Medical expenses', 'expense', 4, 0, NOW(), NOW()),
+('Savings', 'Savings allocation', 'expense', 4, 0, NOW(), NOW());
 
 -- Categories for User 5
 INSERT INTO categories (name, description, type, user_id, deleted, created_at, updated_at)
 VALUES
-('Salary', 'Monthly salary', 'Income', 5, 0, NOW(), NOW()),
-('Food', 'Food and dining expenses', 'Expenses', 5, 0, NOW(), NOW()),
-('Travel', 'Travel and transportation', 'Expenses', 5, 0, NOW(), NOW()),
-('Investment', 'Stocks and bonds', 'Expenses', 5, 0, NOW(), NOW()),
-('Entertainment', 'Movies and events', 'Expenses', 5, 0, NOW(), NOW());
+('Salary', 'Monthly salary', 'income', 5, 0, NOW(), NOW()),
+('Food', 'Food and dining expenses', 'expense', 5, 0, NOW(), NOW()),
+('Travel', 'Travel and transportation', 'expense', 5, 0, NOW(), NOW()),
+('Investment', 'Stocks and bonds', 'expense', 5, 0, NOW(), NOW()),
+('Entertainment', 'Movies and events', 'expense', 5, 0, NOW(), NOW());
 
 
 
@@ -178,14 +176,14 @@ VALUES
 -- Transactions for Salary (Category 1)
 (3000, NOW(), 'Salary Payment', 'Credit', 1, 1, 1, 0, NOW(), NOW()),
 (3500, NOW(), 'Bonus Payment', 'Credit', 1, 1, 1, 0, NOW(), NOW()),
-(1500, NOW(), 'Transfer to savings', 'Debit', 1, 1, 1, 0, NOW(), NOW()),
-(500, NOW(), 'Investment payment', 'Debit', 1, 1, 1, 0, NOW(), NOW()),
+(-1500, NOW(), 'Transfer to savings', 'Debit', 1, 1, 1, 0, NOW(), NOW()),
+(-500, NOW(), 'Investment payment', 'Debit', 1, 1, 1, 0, NOW(), NOW()),
 
 -- Transactions for Groceries (Category 2)
 (200, NOW(), 'Grocery Store', 'Debit', 2, 2, 1, 0, NOW(), NOW()),
 (300, NOW(), 'Supermarket', 'Debit', 2, 2, 1, 0, NOW(), NOW()),
-(100, NOW(), 'Return refund', 'Credit', 2, 2, 1, 0, NOW(), NOW()),
-(150, NOW(), 'Online Grocery', 'Debit', 2, 2, 1, 0, NOW(), NOW()),
+(-100, NOW(), 'Return refund', 'Credit', 2, 2, 1, 0, NOW(), NOW()),
+(-150, NOW(), 'Online Grocery', 'Debit', 2, 2, 1, 0, NOW(), NOW()),
 
 -- Transactions for Rent (Category 3)
 (2500, NOW(), 'Monthly rent', 'Debit', 3, 3, 1, 0, NOW(), NOW()),
@@ -200,8 +198,8 @@ VALUES
 -- Transactions for Salary (Category 1 for User 2)
 (4000, NOW(), 'Monthly salary', 'Credit', 6, 6, 2, 0, NOW(), NOW()),
 (5000, NOW(), 'Bonus payment', 'Credit', 6, 6, 2, 0, NOW(), NOW()),
-(2000, NOW(), 'Transfer to savings', 'Debit', 6, 6, 2, 0, NOW(), NOW()),
-(1000, NOW(), 'Groceries shopping', 'Debit', 6, 7, 2, 0, NOW(), NOW());
+(-2000, NOW(), 'Transfer to savings', 'Debit', 6, 6, 2, 0, NOW(), NOW()),
+(-1000, NOW(), 'Groceries shopping', 'Debit', 6, 7, 2, 0, NOW(), NOW());
 
 -- Transactions for User 3
 INSERT INTO transactions (amount, date_time, description, payment_type, account_account_id, category_id, user_id, deleted, created_at, updated_at)
@@ -209,14 +207,14 @@ VALUES
 -- Transactions for Salary (Category 1 for User 3)
 (4000000, NOW(), 'Monthly salary', 'Credit', 11, 11, 3, 0, NOW(), NOW()),
 (5000000, NOW(), 'Bonus salary', 'Credit', 11, 11, 3, 0, NOW(), NOW()),
-(2000000, NOW(), 'Transfer to savings', 'Debit', 11, 11, 3, 0, NOW(), NOW()),
-(1000000, NOW(), 'Invest in stocks', 'Debit', 11, 11, 3, 0, NOW(), NOW()),
+(-2000000, NOW(), 'Transfer to savings', 'Debit', 11, 11, 3, 0, NOW(), NOW()),
+(-1000000, NOW(), 'Invest in stocks', 'Debit', 11, 11, 3, 0, NOW(), NOW()),
 
 -- Transactions for Food (Category 2 for User 3)
 (200000, NOW(), 'Grocery Store', 'Debit', 12, 12, 3, 0, NOW(), NOW()),
 (300000, NOW(), 'Supermarket', 'Debit', 12, 12, 3, 0, NOW(), NOW()),
-(100000, NOW(), 'Return refund', 'Credit', 12, 12, 3, 0, NOW(), NOW()),
-(150000, NOW(), 'Online Grocery', 'Debit', 12, 12, 3, 0, NOW(), NOW()),
+(-100000, NOW(), 'Return refund', 'Credit', 12, 12, 3, 0, NOW(), NOW()),
+(-150000, NOW(), 'Online Grocery', 'Debit', 12, 12, 3, 0, NOW(), NOW()),
 
 -- Transactions for Travel (Category 3 for User 3)
 (2500000, NOW(), 'Monthly travel expenses', 'Debit', 13, 13, 3, 0, NOW(), NOW()),
@@ -230,14 +228,14 @@ VALUES
 -- Transactions for Business (Category 1 for User 4)
 (10000000, NOW(), 'Monthly business revenue', 'Credit', 16, 16, 4, 0, NOW(), NOW()),
 (8000000, NOW(), 'Project payment', 'Credit', 16, 16, 4, 0, NOW(), NOW()),
-(4000000, NOW(), 'Equipment purchase', 'Debit', 16, 16, 4, 0, NOW(), NOW()),
-(2000000, NOW(), 'Office rent', 'Debit', 16, 16, 4, 0, NOW(), NOW()),
+(-4000000, NOW(), 'Equipment purchase', 'Debit', 16, 16, 4, 0, NOW(), NOW()),
+(-2000000, NOW(), 'Office rent', 'Debit', 16, 16, 4, 0, NOW(), NOW()),
 
 -- Transactions for Groceries (Category 2 for User 4)
 (200000, NOW(), 'Grocery Store', 'Debit', 17, 17, 4, 0, NOW(), NOW()),
 (300000, NOW(), 'Supermarket', 'Debit', 17, 17, 4, 0, NOW(), NOW()),
-(100000, NOW(), 'Return refund', 'Credit', 17, 17, 4, 0, NOW(), NOW()),
-(150000, NOW(), 'Online Grocery', 'Debit', 17, 17, 4, 0, NOW(), NOW());
+(-100000, NOW(), 'Return refund', 'Credit', 17, 17, 4, 0, NOW(), NOW()),
+(-150000, NOW(), 'Online Grocery', 'Debit', 17, 17, 4, 0, NOW(), NOW());
 
 -- Transactions for User 5
 INSERT INTO transactions (amount, date_time, description, payment_type, account_account_id, category_id, user_id, deleted, created_at, updated_at)
@@ -245,14 +243,14 @@ VALUES
 -- Transactions for Salary (Category 1 for User 5)
 (3000000, NOW(), 'Salary Payment', 'Credit', 21, 21, 5, 0, NOW(), NOW()),
 (3500000, NOW(), 'Bonus Payment', 'Credit', 21, 21, 5, 0, NOW(), NOW()),
-(1500000, NOW(), 'Transfer to savings', 'Debit', 21, 21, 5, 0, NOW(), NOW()),
-(500000, NOW(), 'Investment payment', 'Debit', 21, 21, 5, 0, NOW(), NOW()),
+(-1500000, NOW(), 'Transfer to savings', 'Debit', 21, 21, 5, 0, NOW(), NOW()),
+(-500000, NOW(), 'Investment payment', 'Debit', 21, 21, 5, 0, NOW(), NOW()),
 
 -- Transactions for Food (Category 2 for User 5)
 (200000, NOW(), 'Grocery Store', 'Debit', 22, 22, 5, 0, NOW(), NOW()),
 (300000, NOW(), 'Supermarket', 'Debit', 22, 22, 5, 0, NOW(), NOW()),
-(100000, NOW(), 'Return refund', 'Credit', 22, 22, 5, 0, NOW(), NOW()),
-(150000, NOW(), 'Online Grocery', 'Debit', 22, 22, 5, 0, NOW(), NOW());
+(-100000, NOW(), 'Return refund', 'Credit', 22, 22, 5, 0, NOW(), NOW()),
+(-150000, NOW(), 'Online Grocery', 'Debit', 22, 22, 5, 0, NOW(), NOW());
 
 
 
