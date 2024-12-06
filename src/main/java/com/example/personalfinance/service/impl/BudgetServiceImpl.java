@@ -56,7 +56,9 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public void deleteBudget(Long id) {
-        budgetRepository.deleteById(id);
+        Budget budget = budgetRepository.findById(id).orElseThrow();
+        budget.setDeleted(true);
+        budgetRepository.save(budget);
     }
     @Override
     public boolean hasAlready(String userName, int categoryId) {
