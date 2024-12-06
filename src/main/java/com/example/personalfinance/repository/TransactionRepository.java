@@ -46,7 +46,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
     List<Object[]> getMonthlyData(Integer userId);
 
         @Query(value = "SELECT " +
-                        "c.category_name AS category, " +
+                        "c.name AS category, " +
                         "COALESCE(SUM(t.amount), 0) AS expenses " +
                         "FROM " +
                         "transactions t " +
@@ -57,13 +57,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
                         "AND MONTH(FROM_UNIXTIME(t.date_time/1000)) = MONTH(NOW()) " +
                         "AND YEAR(FROM_UNIXTIME(t.date_time/1000)) = YEAR(NOW()) " +
                         "GROUP BY " +
-                        "c.category_name " +
+                        "c.name " +
                         "ORDER BY " +
                         "expenses DESC;", nativeQuery = true)
         List<Object[]> getThisMonthExpenses(Integer userId);
 
         @Query(value = "SELECT " +
-                        "c.category_name AS category, " +
+                        "c.name AS category, " +
                         "COALESCE(SUM(t.amount), 0) AS income " +
                         "FROM " +
                         "transactions t " +
@@ -74,7 +74,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
                         "AND MONTH(FROM_UNIXTIME(t.date_time/1000)) = MONTH(NOW()) " +
                         "AND YEAR(FROM_UNIXTIME(t.date_time/1000)) = YEAR(NOW()) " +
                         "GROUP BY " +
-                        "c.category_name " +
+                        "c.name " +
                         "ORDER BY " +
                         "income DESC;", nativeQuery = true)
         List<Object[]> getThisMonthIncome(Integer userId);
