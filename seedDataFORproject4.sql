@@ -1,3 +1,5 @@
+use personal_finance;
+
 
 -- Insert dữ liệu
 
@@ -91,77 +93,77 @@ VALUES
 INSERT INTO categories ( name, description, type, user_id, deleted, created_at, updated_at)
 VALUES
 ('Salary', 'Income from job', 'Income', 1, 0, NOW(), NOW()),
-('Groceries', 'Daily food expenses', 'Expense', 1, 0, NOW(), NOW()),
-('Rent', 'Monthly rent payments', 'Expense', 1, 0, NOW(), NOW()),
-('Investment', 'Money invested', 'Expense', 1, 0, NOW(), NOW()),
-('Entertainment', 'Leisure and hobbies', 'Expense', 1, 0, NOW(), NOW());
+('Groceries', 'Daily food expenses', 'Expenses', 1, 0, NOW(), NOW()),
+('Rent', 'Monthly rent payments', 'Expenses', 1, 0, NOW(), NOW()),
+('Investment', 'Money invested', 'Expenses', 1, 0, NOW(), NOW()),
+('Entertainment', 'Leisure and hobbies', 'Expenses', 1, 0, NOW(), NOW());
 
 -- Categories for User 2
 INSERT INTO categories ( name, description, type, user_id, deleted, created_at, updated_at)
 VALUES
 ('Salary', 'Monthly salary', 'Income', 2, 0, NOW(), NOW()),
-('Groceries', 'Monthly groceries expenses', 'Expense', 2, 0, NOW(), NOW()),
-('Transport', 'Transportation costs', 'Expense', 2, 0, NOW(), NOW()),
-('Entertainment', 'Leisure activities', 'Expense', 2, 0, NOW(), NOW()),
-('Savings', 'Savings contributions', 'Expense', 2, 0, NOW(), NOW());
+('Groceries', 'Monthly groceries expenses', 'Expenses', 2, 0, NOW(), NOW()),
+('Transport', 'Transportation costs', 'Expenses', 2, 0, NOW(), NOW()),
+('Entertainment', 'Leisure activities', 'Expenses', 2, 0, NOW(), NOW()),
+('Savings', 'Savings contributions', 'Expenses', 2, 0, NOW(), NOW());
 
 -- Categories for User 3
 INSERT INTO categories ( name, description, type, user_id, deleted, created_at, updated_at)
 VALUES
 ('Freelance', 'Income from freelance work', 'Income', 3, 0, NOW(), NOW()),
-('Food', 'Expenses for dining out', 'Expense', 3, 0, NOW(), NOW()),
-('Travel', 'Travel and commuting', 'Expense', 3, 0, NOW(), NOW()),
-('Healthcare', 'Medical expenses', 'Expense', 3, 0, NOW(), NOW()),
-('Investments', 'Funds allocated for investments', 'Expense', 3, 0, NOW(), NOW());
+('Food', 'Expenses for dining out', 'Expenses', 3, 0, NOW(), NOW()),
+('Travel', 'Travel and commuting', 'Expenses', 3, 0, NOW(), NOW()),
+('Healthcare', 'Medical expenses', 'Expenses', 3, 0, NOW(), NOW()),
+('Investments', 'Funds allocated for investments', 'Expenses', 3, 0, NOW(), NOW());
 
 -- Categories for User 4
 INSERT INTO categories (name, description, type, user_id, deleted, created_at, updated_at)
 VALUES
 ('Business', 'Income from business', 'Income', 4, 0, NOW(), NOW()),
-('Groceries', 'Groceries expenses', 'Expense', 4, 0, NOW(), NOW()),
-('Utilities', 'Electricity and water bills', 'Expense', 4, 0, NOW(), NOW()),
-('Healthcare', 'Medical expenses', 'Expense', 4, 0, NOW(), NOW()),
-('Savings', 'Savings allocation', 'Expense', 4, 0, NOW(), NOW());
+('Groceries', 'Groceries expenses', 'Expenses', 4, 0, NOW(), NOW()),
+('Utilities', 'Electricity and water bills', 'Expenses', 4, 0, NOW(), NOW()),
+('Healthcare', 'Medical expenses', 'Expenses', 4, 0, NOW(), NOW()),
+('Savings', 'Savings allocation', 'Expenses', 4, 0, NOW(), NOW());
 
 -- Categories for User 5
 INSERT INTO categories (name, description, type, user_id, deleted, created_at, updated_at)
 VALUES
 ('Salary', 'Monthly salary', 'Income', 5, 0, NOW(), NOW()),
-('Food', 'Food and dining expenses', 'Expense', 5, 0, NOW(), NOW()),
-('Travel', 'Travel and transportation', 'Expense', 5, 0, NOW(), NOW()),
-('Investment', 'Stocks and bonds', 'Expense', 5, 0, NOW(), NOW()),
-('Entertainment', 'Movies and events', 'Expense', 5, 0, NOW(), NOW());
+('Food', 'Food and dining expenses', 'Expenses', 5, 0, NOW(), NOW()),
+('Travel', 'Travel and transportation', 'Expenses', 5, 0, NOW(), NOW()),
+('Investment', 'Stocks and bonds', 'Expenses', 5, 0, NOW(), NOW()),
+('Entertainment', 'Movies and events', 'Expenses', 5, 0, NOW(), NOW());
 
 
 
 
 -- bảng debts
 -- Debts for User 1
-INSERT INTO debts (debt_amount, debt_duedate, debt_moneyfrom, debt_status, user_id)
+INSERT INTO debts (debt_amount, debt_duedate, debt_moneyfrom, debt_status, main_user)
 VALUES
 (1000000, '2024-12-31', 'Bank Loan', 'Pending', 1),
 (2000000, '2025-06-30', 'Car Loan', 'Pending', 1);
 
 -- Debts for User 2
-INSERT INTO debts (debt_amount, debt_duedate, debt_moneyfrom, debt_status, user_id)
+INSERT INTO debts (debt_amount, debt_duedate, debt_moneyfrom, debt_status, main_user)
 VALUES
 (3000000, '2024-12-31', 'Credit Card', 'Pending', 2),
 (10000000, '2025-06-30', 'Personal Loan', 'Pending', 2);
 
 -- Debts for User 3
-INSERT INTO debts (debt_amount, debt_duedate, debt_moneyfrom, debt_status, user_id)
+INSERT INTO debts (debt_amount, debt_duedate, debt_moneyfrom, debt_status, main_user)
 VALUES
 (5000000, '2024-11-30', 'Car Loan', 'Pending', 3),
 (8000000, '2025-05-31', 'Education Loan', 'Pending', 3);
 
 -- Debts for User 4
-INSERT INTO debts (debt_amount, debt_duedate, debt_moneyfrom, debt_status, user_id)
+INSERT INTO debts (debt_amount, debt_duedate, debt_moneyfrom, debt_status, main_user)
 VALUES
 (7000000, '2024-10-31', 'Home Loan', 'Pending', 4),
 (9000000, '2025-04-30', 'Business Loan', 'Pending', 4);
 
 -- Debts for User 5
-INSERT INTO debts (debt_amount, debt_duedate, debt_moneyfrom, debt_status, user_id)
+INSERT INTO debts (debt_amount, debt_duedate, debt_moneyfrom, debt_status, main_user)
 VALUES
 (4000000, '2024-09-30', 'Personal Loan', 'Pending', 5),
 (6000000, '2025-03-31', 'Education Loan', 'Pending', 5);

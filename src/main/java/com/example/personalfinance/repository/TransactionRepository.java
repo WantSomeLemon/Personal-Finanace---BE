@@ -33,10 +33,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
             "LEFT JOIN (\n" +
             "    SELECT\n" +
             "        MONTHNAME(FROM_UNIXTIME(t.date_time/1000)) AS month,\n" +
-            "        SUM(CASE WHEN c.category_type = 'expense' THEN amount ELSE 0 END) AS expenses,\n" +
-            "        SUM(CASE WHEN c.category_type = 'income' THEN amount ELSE 0 END) AS income\n" +
+            "        SUM(CASE WHEN c.type = 'expense' THEN amount ELSE 0 END) AS expenses,\n" +
+            "        SUM(CASE WHEN c.type = 'income' THEN amount ELSE 0 END) AS income\n" +
             "    FROM transactions t\n" +
-            "    JOIN categories c ON t.category_id = c.category_id\n" +
+            "    JOIN categories c ON t.category_id = c.id\n" +
             "    WHERE\n" +
             "        t.user_id = ?1 AND\n" +
             "        FROM_UNIXTIME(t.date_time/1000) >= DATE_SUB(DATE_FORMAT(NOW(), '%Y-%m-01'), INTERVAL 5 MONTH)\n" +
@@ -50,10 +50,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
                         "COALESCE(SUM(t.amount), 0) AS expenses " +
                         "FROM " +
                         "transactions t " +
-                        "JOIN categories c ON t.category_id = c.category_id " +
+                        "JOIN categories c ON t.category_id = c.id " +
                         "WHERE " +
                         "t.user_id = ?1 " +
-                        "AND c.category_type = 'expense' " +
+                        "AND c.type = 'expense' " +
                         "AND MONTH(FROM_UNIXTIME(t.date_time/1000)) = MONTH(NOW()) " +
                         "AND YEAR(FROM_UNIXTIME(t.date_time/1000)) = YEAR(NOW()) " +
                         "GROUP BY " +
@@ -67,10 +67,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
                         "COALESCE(SUM(t.amount), 0) AS income " +
                         "FROM " +
                         "transactions t " +
-                        "JOIN categories c ON t.category_id = c.category_id " +
+                        "JOIN categories c ON t.category_id = c.id " +
                         "WHERE " +
                         "t.user_id = ?1 " +
-                        "AND c.category_type = 'income' " +
+                        "AND c.type = 'income' " +
                         "AND MONTH(FROM_UNIXTIME(t.date_time/1000)) = MONTH(NOW()) " +
                         "AND YEAR(FROM_UNIXTIME(t.date_time/1000)) = YEAR(NOW()) " +
                         "GROUP BY " +
@@ -80,14 +80,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
         List<Object[]> getThisMonthIncome(Integer userId);
 
         @Query(value = "SELECT " +
-                        "    COALESCE(SUM(CASE WHEN c.category_type = 'expense' THEN t.amount END), 0) AS total_expenses, "
+                        "    COALESCE(SUM(CASE WHEN c.type = 'expense' THEN t.amount END), 0) AS total_expenses, "
                         +
-                        "    COALESCE(SUM(CASE WHEN c.category_type = 'income' THEN t.amount END), 0) AS total_income "
+                        "    COALESCE(SUM(CASE WHEN c.type = 'income' THEN t.amount END), 0) AS total_income "
                         +
                         "FROM " +
                         "    transactions t " +
-                        "    JOIN categories c ON t.category_id = c.category_id " + // Sửa từ `t.category_id`
-                                                                                    // thành `t.category_id`
+                        "    JOIN categories c ON t.category_id = c.id " +
                         "WHERE " +
                         "    t.user_id = ?1 " +
                         "    AND MONTH(FROM_UNIXTIME(t.date_time/1000)) = MONTH(NOW()) " +
