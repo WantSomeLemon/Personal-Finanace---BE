@@ -104,6 +104,9 @@ package com.example.personalfinance.service.impl;
 
 import com.example.personalfinance.entity.Debt;
 import com.example.personalfinance.entity.User;
+import com.example.personalfinance.exception.debts.DebtCreationException;
+import com.example.personalfinance.exception.debts.DebtDeletionException;
+import com.example.personalfinance.exception.debts.DebtUpdateException;
 import com.example.personalfinance.repository.DebtRepository;
 import com.example.personalfinance.repository.UserRepository;
 import com.example.personalfinance.service.DebtService;
@@ -125,15 +128,15 @@ import java.util.stream.Collectors;
 public class DebtServiceImpl implements DebtService {
     private final DebtRepository debtRepository;
     private final UserRepository userRepository;
-    
-    
+
+
     @Override
     public Debt debtCreate(Debt deb, String uName) {
         try {
-            User user = userRepository.findByEmail(uName).orElseThrow(() -> new RuntimeException("User not found"));
+            User user = userRepository.findByEmail(uName).orElseThrow(() -> new DebtCreationException("User not found"));
             deb.setUser(user);
-        } catch (Exception ignored) {
-
+        } catch (Exception ex) {
+            throw new DebtCreationException("Failed to create debt: " + ex.getMessage());
         }
         return debtRepository.save(deb);
     }
@@ -141,23 +144,23 @@ public class DebtServiceImpl implements DebtService {
 
     @Override
     public Debt debtUpdate(Debt deb, Integer debtId) {
-        Debt debt = debtRepository.findById(debtId).orElseThrow(() -> new RuntimeException("Debt not found"));
-
-
-        if (!"0".equalsIgnoreCase(String.valueOf(deb.getAmount()))){
+        Debt debt = debtRepository.findById(debtId).orElseThrow(() -> new DebtUpdateException("Debt not found"));
+        // if debAmount not have "0" in it then debtAmount will be set
+        if (!"0".equalsIgnoreCase(String.valueOf(deb.getAmount()))) {
             debt.setAmount(deb.getAmount());
         }
-        if (Objects.nonNull(deb.getMoneyFrom()) && !"".equalsIgnoreCase(deb.getMoneyFrom())){
+        if (Objects.nonNull(deb.getMoneyFrom()) && !"".equalsIgnoreCase(deb.getMoneyFrom())) {
             debt.setMoneyFrom(deb.getMoneyFrom());
         }
-        if (Objects.nonNull(deb.getStatus()) && !"".equalsIgnoreCase(deb.getStatus())){
+        if (Objects.nonNull(deb.getStatus()) && !"".equalsIgnoreCase(deb.getStatus())) {
             debt.setStatus(deb.getStatus());
         }
-        if (Objects.nonNull(deb.getDueDate()) && !"".equalsIgnoreCase(deb.getDueDate())){
+        if (Objects.nonNull(deb.getDueDate()) && !"".equalsIgnoreCase(deb.getDueDate())) {
             debt.setDueDate(deb.getDueDate());
         }
         return debtRepository.save(debt);
     }
+
 
 
     @Override
@@ -168,7 +171,7 @@ public class DebtServiceImpl implements DebtService {
 
     @Override
     public void debtDelete(Integer dId) {
-        Debt entity = debtRepository.findById(dId).orElse(null);
+        Debt entity = debtRepository.findById(dId).orElseThrow(() -> new DebtDeletionException("Debt not found"));
         entity.setDeleted(true);
         debtRepository.save(entity);
     }

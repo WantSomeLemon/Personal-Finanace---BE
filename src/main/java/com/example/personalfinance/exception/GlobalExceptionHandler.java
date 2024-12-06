@@ -8,6 +8,10 @@ import com.example.personalfinance.exception.budget.*;
 import com.example.personalfinance.exception.categories.CategoryAlreadyExistsException;
 import com.example.personalfinance.exception.categories.CategoryDeleteFailedException;
 import com.example.personalfinance.exception.categories.CategoryNotFoundException;
+import com.example.personalfinance.exception.debts.DebtCreationException;
+import com.example.personalfinance.exception.debts.DebtDeletionException;
+import com.example.personalfinance.exception.debts.DebtNotFoundException;
+import com.example.personalfinance.exception.debts.DebtUpdateException;
 import com.example.personalfinance.exception.goals.GoalCreationException;
 import com.example.personalfinance.exception.goals.GoalDeletionException;
 import com.example.personalfinance.exception.goals.GoalNotFoundException;
@@ -145,7 +149,30 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGoalDeletionException(GoalDeletionException ex) {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Goal Deletion Failed", ex.getMessage());
     }
-    
+    //Debt
+    @ExceptionHandler(DebtNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleDebtNotFoundException(DebtNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, "Debt Not Found", ex.getMessage());
+    }
+
+    @ExceptionHandler(DebtCreationException.class)
+    public ResponseEntity<ErrorResponse> handleDebtCreationException(DebtCreationException ex) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Debt Creation Failed", ex.getMessage());
+    }
+
+    @ExceptionHandler(DebtUpdateException.class)
+    public ResponseEntity<ErrorResponse> handleDebtUpdateException(DebtUpdateException ex) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Debt Update Failed", ex.getMessage());
+    }
+
+    @ExceptionHandler(DebtDeletionException.class)
+    public ResponseEntity<ErrorResponse> handleDebtDeletionException(DebtDeletionException ex) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Debt Deletion Failed", ex.getMessage());
+    }
+
+
+
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage());
