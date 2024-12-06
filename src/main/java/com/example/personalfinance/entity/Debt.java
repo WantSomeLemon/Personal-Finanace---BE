@@ -13,7 +13,7 @@ import lombok.Data;
 @Table(name = "debts")
 @Entity
 @Data
-public class Debt {
+public class Debt extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer debtId;

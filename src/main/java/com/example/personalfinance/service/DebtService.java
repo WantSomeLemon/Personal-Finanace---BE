@@ -13,7 +13,7 @@ public interface DebtService {
     Debt debtCreate(Debt deb, String uName);
     Debt debtUpdate(Debt deb, Integer debtId);
     Debt debGetId(Integer dId);
-    String debtDelete(Integer dId);
+    void debtDelete(Integer dId);
     List<Debt> debGet(String uName);
     List<Debt> getAllDebts();
     Date parseDueDate(String dueDate);

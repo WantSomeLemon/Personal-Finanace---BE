@@ -125,25 +125,25 @@ import java.util.stream.Collectors;
 public class DebtServiceImpl implements DebtService {
     private final DebtRepository debtRepository;
     private final UserRepository userRepository;
-
-    // Tạo mới một khoản nợ
+    
+    
     @Override
     public Debt debtCreate(Debt deb, String uName) {
         try {
             User user = userRepository.findByEmail(uName).orElseThrow(() -> new RuntimeException("User not found"));
-            deb.setUser(user); // Gán người dùng cho khoản nợ
+            deb.setUser(user);
         } catch (Exception ignored) {
-            // Nếu có lỗi khi tìm người dùng, có thể xử lý theo cách khác
+
         }
-        return debtRepository.save(deb); // Lưu khoản nợ vào cơ sở dữ liệu
+        return debtRepository.save(deb);
     }
 
-    // Cập nhật thông tin khoản nợ
+
     @Override
     public Debt debtUpdate(Debt deb, Integer debtId) {
         Debt debt = debtRepository.findById(debtId).orElseThrow(() -> new RuntimeException("Debt not found"));
 
-        // Cập nhật các trường thông tin của khoản nợ nếu có giá trị mới
+
         if (!"0".equalsIgnoreCase(String.valueOf(deb.getAmount()))){
             debt.setAmount(deb.getAmount());
         }
@@ -159,17 +159,18 @@ public class DebtServiceImpl implements DebtService {
         return debtRepository.save(debt);
     }
 
-    // Lấy thông tin khoản nợ theo ID
+
     @Override
     public Debt debGetId(Integer dId) {
         return debtRepository.findById(dId).orElseThrow(() -> new RuntimeException("Debt not found"));
     }
 
-    // Xóa một khoản nợ theo ID
+
     @Override
-    public String debtDelete(Integer dId) {
-        debtRepository.deleteById(dId);
-        return "Deleted";
+    public void debtDelete(Integer dId) {
+        Debt entity = debtRepository.findById(dId).orElse(null);
+        entity.setDeleted(true);
+        debtRepository.save(entity);
     }
 
     // Lấy danh sách các khoản nợ của người dùng theo yêu cầu (sắp xếp theo số tiền hoặc theo ngày đáo hạn)

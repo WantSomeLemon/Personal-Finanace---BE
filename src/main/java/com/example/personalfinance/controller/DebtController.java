@@ -50,12 +50,11 @@ public class DebtController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteDebt(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<BaseResponse> deleteDebt(@RequestHeader(value = "Authorization") String token,
                                              @RequestParam("debtId") Integer id)
     {
-        String Response = debtService.debtDelete(id);
-        HttpHeaders httpHead = new HttpHeaders();
-        return ResponseEntity.status(HttpStatus.ACCEPTED).headers(httpHead).body(Response);
+        debtService.debtDelete(id);
+        return ResponseEntity.ok(new BaseResponse("success"));
     }
 
     @PutMapping
